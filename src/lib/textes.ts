@@ -261,7 +261,7 @@ export const TEXTES: Texte[] = [
       {
         numero: 'annexe I, partie II',
         titre: 'Traitement des vulnérabilités',
-        note: "Nomenclature logicielle (SBOM) des composants de premier niveau, politique de divulgation coordonnée, diffusion sans délai des correctifs de sécurité, séparés des mises à jour fonctionnelles.",
+        note: "Nomenclature logicielle — *software bill of materials*, SBOM : l'inventaire lisible par machine des composants qui entrent dans votre produit, avec leur version et leur provenance, dans un format courant comme CycloneDX ou SPDX. Le règlement n'en exige que les composants de **premier niveau**, ce qui est bien moins lourd qu'on ne le croit. S'y ajoutent une politique de divulgation coordonnée et la diffusion sans délai des correctifs de sécurité, séparés des mises à jour fonctionnelles.",
       },
       {
         numero: 'annexes III et IV',

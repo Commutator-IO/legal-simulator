@@ -524,7 +524,7 @@ function FicheEvaluation({
           valeur={e.sbom}
           onChange={(v) => onChange({ sbom: v })}
           placeholder="CycloneDX 1.6, publiée avec chaque version, dépôt interne /sbom"
-          aide="Aucun formulaire ne produit une SBOM : elle sort de la chaîne de construction. Indiquez ici où elle vit, dans quel format, et à quelle version elle se rattache."
+          aide="La SBOM — nomenclature logicielle — est l'inventaire lisible par machine des composants de votre produit : nom, version, provenance. Elle répond en quelques minutes à « sommes-nous touchés par cette faille ? », ce qui prenait des semaines avant Log4Shell. Aucun formulaire ne la produit : elle sort de la chaîne de construction, en CycloneDX ou SPDX. Indiquez ici où elle vit, dans quel format, et à quelle version du produit elle se rattache."
         />
         <Texte
           label="Composants tiers et libres"

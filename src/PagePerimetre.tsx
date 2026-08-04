@@ -150,6 +150,18 @@ export default function PagePerimetre() {
                       <p className="mt-2 text-sm leading-relaxed text-ink-700">
                         {a.raison}
                       </p>
+
+                      {/* Une pastille « à vérifier » qui ne dit pas quoi vérifier
+                          n'est pas une instruction, c'est un reproche. La
+                          condition est donc toujours affichée en clair, et c'est
+                          elle qui devient une question ouverte du cadrage. */}
+                      {a.condition && (
+                        <p className="mt-2.5 rounded-lg bg-gold-50 px-3 py-2 text-sm leading-relaxed text-gold-900">
+                          <span className="font-semibold">À vérifier — </span>
+                          {a.condition}
+                        </p>
+                      )}
+
                       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-500">
                         {suivante && (
                           <span>
@@ -168,6 +180,18 @@ export default function PagePerimetre() {
                   )
                 })}
               </ul>
+
+              <Encadre teinte="gold" titre="Ce que veut dire « à vérifier »">
+                Le questionnaire tranche seul quand la réponse est dans vos réponses.
+                Il ne le peut pas dans trois cas, et il le dit alors au lieu de
+                conclure : une <strong>qualification produit</strong> qu'aucune case ne
+                capture, un <strong>seuil fixé par une loi nationale</strong> de
+                transposition et non par la directive, ou un{' '}
+                <strong>fait extérieur</strong> comme la désignation d'un contrôleur
+                d'accès. Ces lignes ne sont pas des incertitudes à lever plus tard :
+                ce sont les questions ouvertes à poser au cadrage, chacune à un
+                interlocuteur précis.
+              </Encadre>
 
               <Encadre teinte="brand" titre="Ce que le périmètre ne dit pas">
                 Il retient des textes, pas des obligations. Un même règlement pèse

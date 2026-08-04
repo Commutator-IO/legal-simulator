@@ -123,14 +123,29 @@ export type Applicable = {
   texte: string
   /** Pourquoi ce texte sort, dans les termes de la réponse qui l'a déclenché. */
   raison: string
-  /** `certain` : le texte s'applique. `probable` : à vérifier au cas d'espèce. */
+  /** `certain` : le texte s'applique. `probable` : il dépend d'une condition. */
   degre: 'certain' | 'probable'
+  /**
+   * **Ce qu'il faut aller vérifier**, quand le questionnaire ne peut pas
+   * trancher — et il ne le peut pas dans trois cas : une qualification produit
+   * qu'aucune case ne capture, un seuil fixé par une loi nationale de
+   * transposition, ou un fait extérieur comme la désignation d'un contrôleur
+   * d'accès.
+   *
+   * Toujours présent quand `degre` vaut `probable`, et c'est voulu : une
+   * pastille « à vérifier » qui ne dit pas quoi vérifier n'est pas une
+   * instruction, c'est un reproche. Le type ne peut pas l'imposer, la fonction
+   * `ajouter` s'en charge — le degré *dérive* de la présence d'une condition.
+   */
+  condition?: string
 }
 
 export function perimetre(p: Profil): Applicable[] {
   const out: Applicable[] = []
-  const ajouter = (texte: string, raison: string, degre: 'certain' | 'probable' = 'certain') => {
-    if (!out.some((a) => a.texte === texte)) out.push({ texte, raison, degre })
+  const ajouter = (texte: string, raison: string, condition?: string) => {
+    if (!out.some((a) => a.texte === texte)) {
+      out.push({ texte, raison, degre: condition ? 'probable' : 'certain', condition })
+    }
   }
   /** Nuance apportée à un texte déjà retenu — une exemption, en général. */
   const preciser = (texte: string, ajout: string) => {
@@ -181,8 +196,8 @@ export function perimetre(p: Profil): Applicable[] {
     )
     ajouter(
       'machines',
-      "À vérifier : si le produit est une machine ou un produit connexe, le règlement (UE) 2023/1230 s'applique au 20 janvier 2027 et peut faire basculer un composant logiciel dans le haut risque de l'AI Act.",
-      'probable',
+      "Le règlement (UE) 2023/1230 s'applique au 20 janvier 2027 et vise explicitement les logiciels assurant une fonction de sécurité — ce qui fait basculer un tel composant dans le haut risque de l'annexe I de l'AI Act. Les deux dossiers de conformité se construisent alors ensemble.",
+      "Que votre produit soit une machine ou un produit connexe au sens de l'annexe I du règlement. La question se tranche à l'ingénierie produit : aucune case de ce questionnaire ne peut le dire à votre place.",
     )
   }
   if (p.serviceCloud) {
@@ -192,8 +207,8 @@ export function perimetre(p: Profil): Applicable[] {
     )
     ajouter(
       'nis2',
-      "L'informatique en nuage figure à l'annexe I de NIS 2 comme infrastructure numérique. À confronter aux seuils de taille du droit national de transposition.",
-      'probable',
+      "L'informatique en nuage figure à l'annexe I de NIS 2 parmi les infrastructures numériques : le secteur est visé, sans condition.",
+      "Que vous dépassiez les seuils de taille — en général cinquante personnes ou dix millions d'euros de chiffre d'affaires. Ces seuils ne figurent pas dans la directive : ils sont posés par la loi de transposition de chaque État membre où vous êtes établi, et diffèrent d'un pays à l'autre.",
     )
   }
 
@@ -226,7 +241,9 @@ export function perimetre(p: Profil): Applicable[] {
     ajouter(
       'eaa',
       "Vos services relèvent de la directive accessibilité, applicable depuis le 28 juin 2025. La norme EN 301 549 donne la présomption de conformité, et renvoie aux WCAG 2.1 niveau AA pour le web.",
-      p.microEntreprise ? 'probable' : 'certain',
+      p.microEntreprise
+        ? "Que l'exemption de l'article 4 §5 vous couvre réellement : elle vise les micro-entreprises fournissant des *services*, jamais celles qui fabriquent des produits. Un éditeur de moins de dix personnes qui vend un terminal reste tenu."
+        : undefined,
     )
     if (p.microEntreprise) {
       preciser(
@@ -243,8 +260,8 @@ export function perimetre(p: Profil): Applicable[] {
   if (p.plateforme || p.grandPublic) {
     ajouter(
       'dma',
-      "Vous n'êtes vraisemblablement pas contrôleur d'accès, mais vous êtes probablement entreprise utilisatrice de l'un d'eux : le règlement vous ouvre des droits — accès aux données que vous générez, refus du couplage de services, liberté de proposer d'autres conditions ailleurs.",
-      'probable',
+      "Vous n'êtes vraisemblablement pas contrôleur d'accès, mais vous êtes probablement entreprise utilisatrice de l'un d'eux : le règlement vous ouvre alors des droits opposables — accès aux données que vous générez sur la plateforme, refus du couplage de services, liberté de proposer d'autres conditions ailleurs. À traiter comme une réduction de dépendance possible, pas comme une charge.",
+      "Que l'une des plateformes dont vous dépendez figure sur la liste des contrôleurs d'accès désignés par la Commission. C'est cette désignation qui ouvre vos droits, et la liste est publique.",
     )
   }
 

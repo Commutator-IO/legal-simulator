@@ -49,6 +49,37 @@ describe('périmètre', () => {
     expect(ids({ finance: true })).toContain('dora')
   })
 
+  it('dit toujours quoi vérifier quand il ne tranche pas', () => {
+    // L'invariant du module : une pastille « à vérifier » sans condition
+    // énoncée n'est pas une instruction, c'est un reproche. Le degré dérive de
+    // la présence d'une condition, ce test garde la dérivation dans les deux
+    // sens.
+    const tout = Object.keys(PROFIL_VIDE).reduce(
+      (acc, k) => ({ ...acc, [k]: true }),
+      {} as Profil,
+    )
+    for (const a of perimetre(tout)) {
+      if (a.degre === 'probable') {
+        expect(a.condition, `${a.texte} est « à vérifier » sans condition`).toBeTruthy()
+      } else {
+        expect(a.condition, `${a.texte} est certain mais porte une condition`).toBeUndefined()
+      }
+    }
+  })
+
+  it('ne répète pas la pastille dans le corps de la raison', () => {
+    // Le défaut corrigé : la fiche Machines commençait par « À vérifier : »
+    // alors que la pastille le disait déjà, ce qui gaspillait les trois
+    // premiers mots de l'explication.
+    const tout = Object.keys(PROFIL_VIDE).reduce(
+      (acc, k) => ({ ...acc, [k]: true }),
+      {} as Profil,
+    )
+    for (const a of perimetre(tout)) {
+      expect(a.raison.startsWith('À vérifier')).toBe(false)
+    }
+  })
+
   it('marque comme probable ce qui dépend des seuils nationaux', () => {
     const nis2 = perimetre(p({ serviceCloud: true })).find((a) => a.texte === 'nis2')
     expect(nis2?.degre).toBe('probable')
