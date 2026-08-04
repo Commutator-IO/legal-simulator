@@ -24,6 +24,7 @@ export default defineConfig({
         analyses: resolve(import.meta.dirname, 'analyses/index.html'),
         ia: resolve(import.meta.dirname, 'ia/index.html'),
         produit: resolve(import.meta.dirname, 'produit/index.html'),
+        sbom: resolve(import.meta.dirname, 'sbom/index.html'),
         responsabilites: resolve(import.meta.dirname, 'responsabilites/index.html'),
       },
     },

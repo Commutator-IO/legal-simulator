@@ -23,5 +23,6 @@ export const PAGES: { chemin: string; libelle: string }[] = [
   { chemin: '/analyses/', libelle: 'Analyses' },
   { chemin: '/ia/', libelle: 'IA' },
   { chemin: '/produit/', libelle: 'Produit' },
+  { chemin: '/sbom/', libelle: 'SBOM' },
   { chemin: '/responsabilites/', libelle: 'Responsabilités' },
 ]
