@@ -8,6 +8,7 @@ import {
   ChampsSuivi,
   EnteteFiche,
   Manquants,
+  ModeEmploi,
   Onglets,
 } from './components/Pieces'
 import { useCollection } from './lib/collection'
@@ -53,7 +54,7 @@ export default function PageResponsabilites() {
     <Page
       chemin="/responsabilites/"
       titre="Responsabilités et incidents"
-      chapeau="Quatre textes disent la même chose de quatre façons : une obligation que personne ne porte nommément n'est portée par personne. Cette page tient le registre qui met un nom en face de chaque obligation transverse, le calculateur qui superpose les quatre horloges de notification pour le jour où cela tourne mal, et le registre d'information que DORA fait remettre chaque année à l'autorité."
+      chapeau="C'est la page qui survit à votre mission. Un architecte part, et ce qu'il laisse derrière lui n'est pas un schéma : c'est une liste d'obligations continues avec un nom en face de chacune. Les délais de notification, eux, se préparent froids — le premier jalon tombe quatre heures après la classification d'un incident, ce qui ne laisse pas le temps de découvrir à qui l'on doit écrire."
     >
       <Onglets<Onglet>
         valeur={onglet}
@@ -64,6 +65,28 @@ export default function PageResponsabilites() {
           { id: 'dora', label: 'Prestataires — DORA art. 28 §3', compte: accords.items.length },
         ]}
       />
+
+      <ModeEmploi
+        quand="En fin de mission pour le registre de responsabilité — c'est le document de transfert. Avant tout incident pour les délais : la chaîne d'astreinte, les points de contact et les modèles de message se préparent à froid."
+        avecQui="La direction, pas seulement la DSI. NIS 2 engage nommément les organes de direction sur l'approbation des mesures, et la responsabilité peut être engagée personnellement : c'est l'argument qui débloque un arbitrage."
+        livrable="Un registre de responsabilité nominatif, et une fiche réflexe d'incident donnant, par régime, le destinataire et l'échéance."
+      >
+        <p>
+          Le seul chiffre qui compte sur cet écran est celui des obligations{' '}
+          <strong>sans responsable nommé</strong>. Une ligne marquée « fait » sans nom
+          l'est jusqu'au départ de celui qui s'en occupait sans le dire — et personne ne
+          s'en aperçoit avant le contrôle. « La DSI » n'est pas un nom.
+        </p>
+        <p>
+          Sur les délais : faites tourner le calculateur une fois sur un horaire fictif,
+          en cochant tous les régimes applicables au client. Vous verrez apparaître le
+          vrai problème — quatre horloges qui partent d'instants différents vers quatre
+          destinataires différents — et vous saurez quoi écrire dans la procédure. La
+          règle d'exploitation à retenir : un signalement incomplet dans les délais vaut
+          mieux qu'un signalement complet hors délai, les trois régimes prévoyant tous
+          une mise à jour ultérieure.
+        </p>
+      </ModeEmploi>
 
       {onglet === 'registre' && <BlocRegistre />}
       {onglet === 'incident' && <BlocIncident />}

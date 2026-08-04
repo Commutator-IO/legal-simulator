@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Page } from './components/Cadre'
 import { Case } from './components/Champs'
 import { Encadre, Pastille, Stat } from './components/Blocs'
+import { ModeEmploi } from './components/Pieces'
 import { PROFIL_VIDE, QUESTIONS, perimetre } from './lib/perimetre'
 import type { Profil } from './lib/perimetre'
 import { DOMAINES, texte } from './lib/textes'
@@ -38,9 +39,27 @@ export default function PagePerimetre() {
   return (
     <Page
       chemin="/"
-      titre="Ce qui vous concerne"
-      chapeau="Treize textes de l'Union encadrent aujourd'hui les données et les logiciels, et ils ne s'appliquent pas tous à tout le monde. Répondez à ce qui suit : la page en déduit votre périmètre, puis les échéances qui en découlent. Rien n'est envoyé nulle part — les réponses restent dans votre navigateur."
+      titre="Cadrer le périmètre réglementaire"
+      chapeau="Treize textes de l'Union encadrent aujourd'hui les données et les logiciels, et l'erreur qui coûte le plus cher en conception n'est pas d'en mal appliquer un : c'est d'en ignorer un jusqu'au gel de l'architecture. Décrivez l'activité de votre client en douze cases, la page en déduit les textes applicables, le motif de chacun et les échéances qui en découlent. Rien n'est envoyé nulle part — tout reste dans votre navigateur."
     >
+      <ModeEmploi
+        quand="Première demi-heure d'une mission, avant l'atelier de cadrage technique. Plus tard, les textes découverts deviennent des reprises."
+        avecQui="Le sponsor métier et, s'il existe, le DPO ou le RSSI. Trois des douze questions — secteur NIS 2, entité financière, micro-entreprise — ne se répondent pas depuis la DSI."
+        livrable="Une note de périmètre : les textes retenus, la raison de chacun, et la première échéance. C'est la page à imprimer et à mettre en annexe du cadrage."
+      >
+        <p>
+          Cochez large. Un faux positif coûte une lecture de fiche ; un faux négatif
+          coûte une reprise d'architecture. Les entrées marquées{' '}
+          <em>à vérifier</em> sont celles qui dépendent d'un seuil national ou d'une
+          qualification que vous ne pouvez pas trancher seul : notez-les comme questions
+          ouvertes plutôt que comme conclusions.
+        </p>
+        <p>
+          Une fois le périmètre posé, l'ordre de travail est celui de la navigation :
+          dater les échéances, lire ce que les textes imposent à la conception, puis
+          ouvrir les outils du ou des domaines retenus.
+        </p>
+      </ModeEmploi>
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <section>
           <h2 className="titre mb-4 text-lg text-ink-900">Votre activité</h2>
@@ -171,7 +190,7 @@ export default function PagePerimetre() {
       </div>
 
       <section className="mt-14">
-        <h2 className="titre mb-1 text-lg text-ink-900">Par où commencer</h2>
+        <h2 className="titre mb-1 text-lg text-ink-900">L'ordre de travail</h2>
         <p className="mb-5 max-w-3xl text-sm leading-relaxed text-ink-600">
           Elles sont dans l'ordre où l'on s'en sert : situer, dater, lire le texte,
           puis documenter — domaine par domaine, parce que c'est ainsi qu'on travaille.
@@ -188,7 +207,7 @@ export default function PagePerimetre() {
               href: '/textes/',
               titre: 'Les textes',
               texte:
-                "Une fiche par règlement : objet, qui est visé, plafond de sanction, articles qu'on ouvre en pratique, et le lien EUR-Lex.",
+                "Huit notions pour lire un règlement seul, puis une fiche par texte — dont la rubrique qui vous concerne : ce qu'il impose à la conception, traduit en contraintes d'architecture.",
             },
             {
               href: '/rgpd/',
@@ -212,7 +231,13 @@ export default function PagePerimetre() {
               href: '/produit/',
               titre: 'Le produit',
               texte:
-                "Catalogue et catégorie CRA, évaluation des risques de l'article 13 §2, déclaration UE de conformité de l'annexe V, et audit d'accessibilité.",
+                "Catalogue et catégorie CRA, évaluation des risques de l'article 13 §2, déclaration UE de conformité, audit d'accessibilité. La catégorie décide du chemin critique du planning.",
+            },
+            {
+              href: '/responsabilites/',
+              titre: 'Le transfert',
+              texte:
+                "Ce que vous laissez derrière vous : une obligation, un nom, une date de revue. Plus le calculateur qui superpose les quatre horloges de notification d'incident.",
             },
           ].map((c) => (
             <a

@@ -1,8 +1,17 @@
 # Conformité UE — données et logiciels
 
-Un site statique qui répond à quatre questions, dans l'ordre où on se les pose :
-**quels textes européens me concernent**, **à quelle date ils mordent**, **ce
-qu'ils exigent de mon système ou de mon produit**, et **comment le documenter**.
+Un site statique **écrit pour un architecte logiciel**, pas pour un juriste. Il
+répond à quatre questions dans l'ordre où on se les pose en mission : **quels
+textes européens contraignent cette architecture**, **à quelle date ils
+mordent**, **ce qu'ils imposent concrètement à la conception**, et **quelles
+pièces il faut produire**.
+
+Le pari : un architecte n'a pas à devenir juriste, mais il ne peut pas concevoir
+sans savoir lire ces textes — ce sont eux qui fixent des contraintes que son
+architecture portera pendant des années. Alors le site enseigne d'abord (huit
+notions suffisent à lire un règlement seul), traduit ensuite chaque texte en
+contraintes d'architecture, et dit enfin, pour chaque outil, **quand s'en
+servir, avec qui, et ce qu'on en sort**.
 
 → [legal.commutator.io](https://legal.commutator.io)
 
@@ -20,6 +29,15 @@ une ligne de `src/lib/calendrier.ts` a changé et trois tests ont dit où
 regarder.
 
 Trois règles tenues partout :
+
+- **Chaque texte dit ce qu'il impose à la conception.** C'est la seule rubrique
+  du corpus qui ne paraphrase pas le droit : elle parle de modèle de données, de
+  purge exécutable, de clé de chiffrement qui ne quitte pas l'Union, de canal de
+  mise à jour séparé du canal fonctionnel. Réciter un article à un architecte ne
+  l'aide pas ; lui dire ce qu'il doit changer dans son schéma, si.
+- **Chaque outil porte son mode d'emploi en mission** — le moment du projet,
+  l'interlocuteur, le livrable. Un formulaire de conformité posé sans contexte
+  laisse la question la plus utile sans réponse.
 
 - **Rien n'est affirmé sans article.** Chaque obligation citée porte son numéro,
   chaque texte son identifiant ELI — l'adresse EUR-Lex stable, qui survit aux
@@ -45,7 +63,7 @@ Trois règles tenues partout :
 | `/produit/` | Catalogue et catégorie CRA, évaluation des risques (art. 13 §2), déclaration UE de conformité (annexe V), audit d'accessibilité EN 301 549 |
 | `/responsabilites/` | Registre de responsabilité, calculateur de délais de notification, registre d'information DORA (art. 28 §3) |
 
-Deux principes de structure, appris à la première version :
+Trois principes de structure :
 
 - **Tout est multi-instances.** Une organisation n'a pas *un* système d'IA, elle
   en a douze ; un fabricant a un catalogue, pas un produit. Le livrable réel de
@@ -54,6 +72,9 @@ Deux principes de structure, appris à la première version :
 - **Toute pièce porte un responsable, un validateur et une date de revue.** Un
   contrôleur regarde la date avant de lire le fond, parce qu'elle dit seule si
   le document est vivant ou s'il a été produit une fois pour un audit.
+- **Chaque page s'ouvre sur un « dans votre mission »** : quand s'en servir,
+  avec qui, ce qu'on produit. Un outil dont on ne sait pas nommer le livrable
+  n'a pas sa place dans une mission.
 
 ## Le corpus
 
@@ -83,7 +104,8 @@ avertissements et sort avec 0.
 
 ```
 src/lib/        le droit — corpus, dates, arbres de décision, et leurs tests
-src/components/ Cadre, Champs, Blocs, Frise
+src/lib/notions.ts  les huit notions pédagogiques, et l'erreur que chacune évite
+src/components/ Cadre, Champs, Blocs, Frise, Pieces (dont ModeEmploi)
 src/Page*.tsx   une page par fichier ; un point d'entrée HTML par page
 ```
 

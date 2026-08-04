@@ -8,6 +8,7 @@ import {
   ChampsSuivi,
   EnteteFiche,
   Manquants,
+  ModeEmploi,
   Onglets,
 } from './components/Pieces'
 import { useCollection } from './lib/collection'
@@ -51,7 +52,7 @@ export default function PageProduit() {
     <Page
       chemin="/produit/"
       titre="Produit et conformité"
-      chapeau="Un fabricant a un catalogue, pas un produit : la conformité au règlement cyberrésilience s'apprécie version par version, et les trois pièces qu'il exige — évaluation des risques, documentation, déclaration UE de conformité — se rattachent chacune à une version mise sur le marché. S'y ajoute l'accessibilité, seul texte de ce site dont le respect se vérifie de l'extérieur, par n'importe qui, en quelques minutes."
+      chapeau="Le règlement cyberrésilience fait entrer le logiciel dans la mécanique du droit des produits : conformité démontrée avant la mise sur le marché, marquage CE, et pour certaines catégories un organisme notifié tiers. Pour un architecte, la contrainte qui remonte le plus haut n'est pas la sécurité — c'est la période de support : cinq ans minimum transforment une version livrée en engagement pluriannuel, avec la compatibilité ascendante et l'infrastructure de distribution que cela suppose."
     >
       <Onglets<Onglet>
         valeur={onglet}
@@ -63,6 +64,29 @@ export default function PageProduit() {
           { id: 'accessibilite', label: 'Accessibilité — EN 301 549', compte: audits.items.length },
         ]}
       />
+
+      <ModeEmploi
+        quand="La qualification se fait avant le choix d'architecture, pas avant la mise sur le marché. La catégorie décide de la procédure d'évaluation — et donc de la disponibilité d'un organisme notifié, qui devient le chemin critique du planning."
+        avecQui="Le responsable produit pour la période de support et le positionnement commercial ; la sécurité pour l'évaluation des risques. La déclaration de conformité, elle, se signe par un dirigeant — annexe V, point 3 : « sous la seule responsabilité du fabricant »."
+        livrable="Par version mise sur le marché : une évaluation des risques, une documentation technique, une déclaration UE de conformité. Trois pièces rattachées à une version, pas à un produit."
+      >
+        <p>
+          L'ordre de travail : qualifiez d'abord la catégorie — si elle est
+          <em> classe II</em> ou <em>critique</em>, l'auto-évaluation est fermée et il
+          faut prendre rang chez un organisme notifié tout de suite. Menez ensuite
+          l'évaluation des risques, qui fonde tout le reste ; la déclaration ne fait que
+          la conclure.
+        </p>
+        <p>
+          Trois décisions de conception à prendre tôt, parce qu'elles ne se rattrapent
+          pas. <strong>La SBOM</strong> se génère depuis la chaîne de construction et se
+          rattache à chaque artefact publié : une semaine au début d'un projet, un
+          trimestre à la fin. <strong>Le canal de mise à jour de sécurité</strong> doit
+          être séparé du canal fonctionnel — un correctif ne peut pas être l'otage d'une
+          montée de version payante. <strong>La période de support</strong> engage votre
+          compatibilité ascendante sur cinq ans au moins.
+        </p>
+      </ModeEmploi>
 
       {onglet === 'catalogue' && <BlocCatalogue c={produits} />}
       {onglet === 'evaluation' && <BlocEvaluation c={evaluations} />}

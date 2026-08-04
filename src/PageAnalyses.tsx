@@ -8,6 +8,7 @@ import {
   ChampsSuivi,
   EnteteFiche,
   Manquants,
+  ModeEmploi,
   Onglets,
 } from './components/Pieces'
 import { useCollection } from './lib/collection'
@@ -61,7 +62,7 @@ export default function PageAnalyses() {
     <Page
       chemin="/analyses/"
       titre="Les analyses"
-      chapeau="Quatre analyses écrites que les textes imposent avant d'agir, et non après : l'analyse d'impact du RGPD, la mise en balance de l'intérêt légitime, l'analyse d'impact du transfert issue de Schrems II, et l'analyse des droits fondamentaux de l'AI Act. Chacune rend un verdict, parce qu'aucune ne sert à noter : elles servent à décider."
+      chapeau="Quatre analyses écrites que les textes imposent avant d'agir, jamais après. Elles ressemblent à des formalités juridiques ; ce sont en réalité des revues de conception déguisées — l'analyse d'impact demande de justifier chaque donnée collectée, l'analyse de transfert demande où vivent vos clés de chiffrement, la mise en balance demande si un moyen moins intrusif existait. Ce sont vos arbitrages qu'elles instruisent, pas ceux du juriste."
     >
       <Onglets<Onglet>
         valeur={onglet}
@@ -73,6 +74,27 @@ export default function PageAnalyses() {
           { id: 'aidf', label: 'Droits fondamentaux — IA art. 27', compte: aidfs.items.length },
         ]}
       />
+
+      <ModeEmploi
+        quand="Avant le gel de l'architecture, jamais après la mise en production. L'article 35 §1 dit « avant le traitement » — et si l'analyse conclut à un risque résiduel élevé, l'article 36 impose de consulter l'autorité avant de commencer : huit semaines, prorogeables de six."
+        avecQui="Le DPO instruit et rend un avis, le responsable de traitement décide. Vous fournissez la matière : flux, mesures techniques, et surtout l'appréciation honnête de ce que les mesures réduisent réellement."
+        livrable="Une analyse datée et signée, avec l'avis du DPO consigné — y compris s'il n'est pas suivi, auquel cas le motif l'est aussi."
+      >
+        <p>
+          Le point que les architectes tranchent seuls, et mal : la différence entre
+          risque <strong>brut</strong> et risque <strong>résiduel</strong>. C'est le
+          résiduel — après mesures — qui déclenche la consultation préalable. Un chiffrement
+          dont vous détenez la clé ne réduit pas le risque d'accès par votre propre
+          administrateur : baisser le résiduel dans le formulaire sans avoir changé la
+          conception est la manière la plus courante de produire une analyse fausse.
+        </p>
+        <p>
+          Les trois événements redoutés — accès, modification, disparition — se lisent
+          comme confidentialité, intégrité, disponibilité. Vous savez déjà les évaluer ;
+          la seule bascule est que la gravité s'apprécie <em>pour la personne</em>, pas
+          pour le système.
+        </p>
+      </ModeEmploi>
 
       {onglet === 'aipd' && <BlocAipd c={aipds} />}
       {onglet === 'lia' && <BlocLia c={lias} />}

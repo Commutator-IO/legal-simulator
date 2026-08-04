@@ -7,6 +7,9 @@ import { ECHEANCES, aujourdhui, instant, joursRestants } from './lib/calendrier'
 import { echeanceRelative, jour } from './lib/format'
 import { TEXTE as CLASSE_TEXTE } from './lib/couleurs'
 import type { Teinte } from './lib/couleurs'
+import { NOTIONS } from './lib/notions'
+import { Riche } from './components/Texte'
+import { ModeEmploi } from './components/Pieces'
 
 const LIBELLE_NATURE: Record<Nature, string> = {
   reglement: 'Règlement — d’application directe',
@@ -28,9 +31,64 @@ export default function PageTextes() {
   return (
     <Page
       chemin="/textes/"
-      titre="Les textes"
-      chapeau="Une fiche par acte : ce qu'il impose, à qui, ce qu'on risque, et les articles qu'on ouvre réellement. Un règlement s'applique tel quel dans les vingt-sept États membres ; une directive ne lie que l'État, et c'est alors la loi nationale de transposition qui vous est opposable — une distinction qui décide de ce qu'il faut aller lire ensuite."
+      titre="Les textes, et comment les lire"
+      chapeau="Vous n'avez pas à devenir juriste, mais vous ne pouvez pas concevoir sans savoir lire ces textes : ce sont eux qui fixent des contraintes que votre architecture devra porter pendant des années. Commencez par les huit notions ci-dessous — elles suffisent à lire un règlement seul et à savoir quand appeler un juriste. Chaque fiche dit ensuite ce que le texte impose, et surtout ce qu'il impose à la conception."
     >
+      <ModeEmploi
+        quand="Au démarrage d'une mission, avant l'atelier de cadrage. Une demi-journée de lecture ici évite de découvrir une contrainte structurante après le gel de l'architecture."
+        avecQui="Seul. C'est le seul écran du site qui ne demande l'avis de personne — il sert à ne pas arriver ignorant devant le juriste."
+        livrable="Rien de formel. Mais vous devez pouvoir dire, pour chaque texte retenu, quel article contraint votre conception et à quelle date."
+      >
+        <p>
+          Lisez d'abord les notions, puis n'ouvrez que les fiches des textes que la{' '}
+          <a href="/" className="font-medium underline">
+            page Périmètre
+          </a>{' '}
+          a retenus pour votre client. Sur chaque fiche, la rubrique{' '}
+          <em>Ce que ça impose à la conception</em> est celle qui vous concerne
+          directement : le reste sert à situer et à argumenter.
+        </p>
+        <p>
+          Un réflexe qui fait gagner du temps en réunion : citez toujours l'article, pas
+          le règlement. « L'AI Act nous oblige » n'est discutable par personne ;
+          « l'article 12 impose six mois de journaux » se chiffre, se conteste et se
+          planifie.
+        </p>
+      </ModeEmploi>
+
+      <section className="mb-14">
+        <h2 className="titre mb-1 text-lg text-ink-900">
+          Huit notions pour lire le droit de l'Union
+        </h2>
+        <p className="mb-5 max-w-3xl text-sm leading-relaxed text-ink-600">
+          Chacune est ici parce que la méconnaître produit une erreur de conception
+          coûteuse — et l'exemple joint dit laquelle.
+        </p>
+        <div className="grid gap-4 md:grid-cols-2">
+          {NOTIONS.map((n, i) => (
+            <article key={n.id} className="card p-5">
+              <div className="flex items-baseline gap-2.5">
+                <span className="tabular text-xs font-semibold text-brand-600">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <h3 className="titre text-base text-ink-900">{n.titre}</h3>
+              </div>
+              <p className="mt-2 text-sm leading-relaxed font-medium text-ink-800">
+                <Riche>{n.resume}</Riche>
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-ink-600">
+                <Riche>{n.detail}</Riche>
+              </p>
+              <p className="mt-3 border-t border-ink-100 pt-3 text-sm leading-relaxed text-ember-800">
+                <span className="font-semibold">L'erreur que ça évite : </span>
+                <Riche>{n.erreur}</Riche>
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <h2 className="titre mb-4 text-lg text-ink-900">Les treize textes</h2>
       <div className="sans-impression mb-6 flex flex-wrap gap-2">
         <button
           type="button"
@@ -94,6 +152,15 @@ function Fiche({ texte: t, today }: { texte: Texte; today: string }) {
       </header>
 
       <p className="mt-4 leading-relaxed text-ink-800">{t.objet}</p>
+
+      <div className="mt-4 rounded-xl border-l-4 border-l-brand-500 bg-brand-50/70 p-4">
+        <p className="mb-1.5 text-xs font-semibold tracking-wide text-brand-700 uppercase">
+          Ce que ça impose à la conception
+        </p>
+        <p className="text-sm leading-relaxed text-ink-700">
+          <Riche>{t.architecture}</Riche>
+        </p>
+      </div>
 
       <dl className="mt-5 grid gap-4 border-t border-ink-100 pt-5 sm:grid-cols-2">
         <div>

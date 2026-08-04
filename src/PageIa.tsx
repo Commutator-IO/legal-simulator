@@ -8,6 +8,7 @@ import {
   ChampsSuivi,
   EnteteFiche,
   Manquants,
+  ModeEmploi,
   Onglets,
 } from './components/Pieces'
 import { useCollection } from './lib/collection'
@@ -63,7 +64,7 @@ export default function PageIa() {
     <Page
       chemin="/ia/"
       titre="Intelligence artificielle"
-      chapeau="Le livrable réel de l'AI Act est un inventaire : c'est lui qu'une autorité demande d'abord, parce qu'il révèle les systèmes que personne n'avait pensé à qualifier. La qualification n'en est qu'une colonne. S'y ajoutent la documentation technique de l'annexe IV, due par tout fournisseur de système à haut risque, et le journal de maîtrise de l'IA — l'obligation la plus ancienne du règlement, et la moins souvent tracée."
+      chapeau="La question que l'AI Act vous pose n'est pas « votre modèle est-il performant » mais « à quoi sert sa sortie ». Un même modèle de classification est hors champ dans un outil de tri documentaire et à haut risque dans un outil de présélection de candidatures : c'est l'usage qui qualifie, jamais la technique. D'où l'inventaire — le vrai livrable du règlement, celui qui révèle les systèmes que personne n'avait pensé à qualifier."
     >
       <Onglets<Onglet>
         valeur={onglet}
@@ -74,6 +75,31 @@ export default function PageIa() {
           { id: 'formation', label: 'Maîtrise de l’IA — art. 4', compte: sessions.items.length },
         ]}
       />
+
+      <ModeEmploi
+        quand="L'inventaire se tient en continu ; la qualification se fait au choix de la solution. Après, elle ne change plus que le budget — un système déjà intégré qui ressort « haut risque » coûte un système de gestion des risques, une documentation annexe IV et un enregistrement à la base de données de l'Union."
+        avecQui="Les métiers, plus que la DSI. Les systèmes non qualifiés sont presque toujours ceux qu'une équipe a souscrits seule ; commencez par la liste des abonnements logiciels, pas par le schéma d'architecture."
+        livrable="Un inventaire à jour, une ligne par système, avec le niveau de risque retenu et le raisonnement qui y conduit. C'est ce qu'une autorité demande en premier."
+      >
+        <p>
+          Trois pièges de qualification qui reviennent à chaque mission.{' '}
+          <strong>Le rôle</strong> d'abord : un déployeur qui affine un modèle ou
+          l'exploite sous sa marque devient fournisseur (art. 25) et hérite de tout le
+          chapitre III — un réglage fin suffit.{' '}
+          <strong>Le profilage</strong> ensuite : dès que le système note des personnes
+          physiques, la dérogation de l'article 6 §3 est fermée, quelle que soit
+          l'étroitesse de la tâche.{' '}
+          <strong>La transparence</strong> enfin : l'article 50 est déjà applicable et
+          touche bien plus de systèmes que le haut risque.
+        </p>
+        <p>
+          Ce qui doit remonter dans votre conception, indépendamment du niveau : la
+          journalisation de l'article 12 — six mois au moins, à budgéter en volume —,
+          la traçabilité des données d'entraînement qui ne se reconstitue pas après
+          coup, et un marquage des sorties génératives <em>lisible par machine</em> :
+          un bandeau visuel ne satisfait pas l'article 50 §2.
+        </p>
+      </ModeEmploi>
 
       {onglet === 'inventaire' && <BlocInventaire c={systemes} />}
       {onglet === 'documentation' && <BlocDocumentation c={docs} />}

@@ -42,7 +42,16 @@ export type Texte = {
   /** Deux phrases : ce que le texte impose, et à qui. */
   objet: string;
   /** Qui est visé, en langage d'entreprise plutôt que de législateur. */
-  concerne: string;
+  concerne: string
+  /**
+   * Ce que le texte impose **à la conception**, traduit en contraintes
+   * d'architecture. C'est la seule rubrique de ce fichier qui ne paraphrase
+   * pas le droit : elle dit ce qu'il faut changer dans un schéma, un modèle de
+   * données ou une chaîne de construction. Un architecte à qui l'on récite un
+   * article ne sait pas quoi en faire ; à qui l'on dit « il faut une clé de
+   * chiffrement qui ne quitte pas l'Union », si.
+   */
+  architecture: string;
   /** Le plafond de sanction, avec son article. Vide si le texte n'en porte pas. */
   sanction?: string;
   /** Les articles qu'on ouvre en pratique, avec ce qu'ils demandent. */
@@ -71,6 +80,8 @@ export const TEXTES: Texte[] = [
       "Encadre tout traitement de données personnelles : il faut une base légale, une finalité déterminée, et la capacité de prouver l'un et l'autre.",
     concerne:
       "Toute organisation qui traite des données de personnes situées dans l'Union, où qu'elle soit établie (art. 3).",
+    architecture:
+      "Trois contraintes structurantes, dans l'ordre où elles coûtent cher si on les découvre tard. **La finalité borne le modèle de données** : une colonne sans finalité déclarée est une non-conformité, pas une option ouverte pour plus tard. **L'effacement doit être exécutable** — une durée de conservation suppose une purge réelle, y compris dans les sauvegardes, les journaux, les réplicas de lecture et l'entrepôt analytique ; c'est le point qui casse les architectures événementielles, où le journal d'événements est immuable par construction. **La portabilité et l'accès supposent une extraction par personne**, ce qui n'est trivial que si l'identité est une clé de premier ordre dès la conception.",
     sanction:
       "20 M€ ou 4 % du chiffre d'affaires mondial annuel, le montant le plus élevé étant retenu (art. 83 §5).",
     articles: [
@@ -133,6 +144,8 @@ export const TEXTES: Texte[] = [
       "Régit la lecture et l'écriture d'informations sur le terminal de l'utilisateur — traceurs, empreintes de navigateur, pixels — indépendamment du fait que ces informations soient personnelles.",
     concerne:
       "Tout éditeur de site, d'application ou de courriel commercial visant des utilisateurs dans l'Union.",
+    architecture:
+      "Le consentement au dépôt de traceurs est **préalable** : rien ne s'écrit sur le terminal avant le clic, ce qui interdit de charger les balises dans le `<head>` et impose un gestionnaire de consentement en amont du chargement des scripts tiers. Corollaire d'architecture souvent manqué : la mesure d'audience exemptée doit être cloisonnée du reste, sans identifiant partagé avec les traceurs publicitaires.",
     sanction:
       "Fixée par chaque État membre. En France, 2 % du chiffre d'affaires (art. 20 loi Informatique et Libertés) ; les amendes traceurs de la CNIL ont dépassé 100 M€.",
     articles: [
@@ -161,6 +174,8 @@ export const TEXTES: Texte[] = [
       "Classe les systèmes d'IA par le risque qu'ils font peser sur les droits fondamentaux, et fait porter les obligations essentiellement au fournisseur — celui qui met le système sur le marché sous son nom.",
     concerne:
       "Fournisseurs, déployeurs, importateurs et distributeurs de systèmes d'IA mis sur le marché ou utilisés dans l'Union, y compris lorsque seule la sortie du système y est utilisée (art. 2).",
+    architecture:
+      "Ce qui pèse sur la conception vient du chapitre III, et se conçoit difficilement après coup. **La journalisation de l'article 12** est une exigence produit : traces automatiques sur toute la durée de vie, conservées six mois au moins — donc un volume, une rétention et un coût à budgéter dès l'architecture. **Le contrôle humain de l'article 14** est une exigence d'interface : il faut que la supervision soit possible, pas seulement prévue au contrat. **La traçabilité des données d'entraînement** ne se reconstitue pas deux ans plus tard : provenance, versions, étiquetage doivent être capturés par le pipeline dès le premier entraînement. Et **le marquage de l'article 50** doit être lisible par machine — filigrane, métadonnées C2PA ou équivalent —, un bandeau visuel ne suffit pas.",
     sanction:
       "35 M€ ou 7 % du chiffre d'affaires mondial pour une pratique interdite ; 15 M€ ou 3 % pour la plupart des autres manquements ; 7,5 M€ ou 1 % pour une information inexacte (art. 99).",
     articles: [
@@ -218,6 +233,8 @@ export const TEXTES: Texte[] = [
       "Fait de la sécurité une condition de mise sur le marché : un produit comportant des éléments numériques ne porte le marquage CE que s'il satisfait des exigences essentielles de sécurité et s'il est maintenu pendant une durée annoncée.",
     concerne:
       "Fabricants, importateurs et distributeurs de tout produit matériel ou logiciel connectable, commercialisé dans l'Union. Le logiciel vendu seul est un produit. Le SaaS n'est visé que par ses composants de traitement à distance intégrés au produit (art. 3 §2).",
+    architecture:
+      "Le texte transforme une version livrée en **engagement pluriannuel**, et c'est la contrainte qui remonte le plus haut dans les choix de conception. Il faut un **canal de mise à jour de sécurité séparé du canal fonctionnel**, capable d'atteindre un parc déployé pendant cinq ans au moins — donc une compatibilité ascendante tenue sur cette durée, et une infrastructure de distribution qui survit au produit. Il faut une **SBOM générée par la chaîne de construction**, rattachée à chaque artefact publié : cela se met en place en une semaine au début d'un projet, en un trimestre à la fin. Et la sécurisation par défaut se décide au moment du choix des valeurs de configuration, pas à la revue de sécurité.",
     sanction:
       "15 M€ ou 2,5 % du chiffre d'affaires mondial pour les exigences essentielles ; 10 M€ ou 2 % pour les autres obligations ; 5 M€ ou 1 % pour une information trompeuse (art. 64).",
     articles: [
@@ -265,6 +282,8 @@ export const TEXTES: Texte[] = [
       "Impose des mesures de gestion des risques et un régime de notification d'incident aux entités de dix-huit secteurs, avec une responsabilité personnelle des dirigeants sur l'approbation de ces mesures.",
     concerne:
       "Entités essentielles et importantes des secteurs listés aux annexes I et II — dont l'informatique en nuage, les centres de données, les réseaux de diffusion de contenu, les fournisseurs de services gérés et les places de marché — au-delà des seuils moyenne entreprise.",
+    architecture:
+      "Deux exigences se traduisent directement en architecture : l'**authentification à plusieurs facteurs ou l'authentification continue** sur les accès d'administration, et la **continuité** — sauvegardes testées, restauration mesurée, plan de reprise éprouvé. La sécurité de la chaîne d'approvisionnement, elle, se joue au niveau des dépendances et des fournisseurs d'exécution : ce que vous ne maîtrisez pas, vous devez au moins le connaître.",
     sanction:
       "10 M€ ou 2 % du chiffre d'affaires mondial pour une entité essentielle ; 7 M€ ou 1,4 % pour une entité importante (art. 34).",
     articles: [
@@ -297,6 +316,8 @@ export const TEXTES: Texte[] = [
       "Le pendant financier de NIS 2 : résilience opérationnelle, tests, et surtout encadrement contractuel des prestataires informatiques tiers, avec une supervision directe des plus critiques d'entre eux.",
     concerne:
       "Entités financières — banques, assureurs, sociétés de gestion, prestataires de services sur crypto-actifs — et leurs prestataires de services informatiques tiers.",
+    architecture:
+      "L'exigence qui change une architecture est la **stratégie de sortie testée** de l'article 28 §8 : pouvoir quitter un fournisseur suppose de ne pas dépendre de ses services managés propriétaires sur le chemin critique, ou d'avoir écrit et éprouvé le plan de bascule. S'y ajoutent des **tests de résilience** — et, pour les entités les plus significatives, des tests d'intrusion fondés sur la menace, qui supposent des environnements de test représentatifs de la production.",
     sanction:
       "Fixée par chaque État membre ; astreinte pouvant atteindre 1 % du chiffre d'affaires mondial journalier pour un prestataire critique désigné (art. 35 §8).",
     articles: [
@@ -324,6 +345,8 @@ export const TEXTES: Texte[] = [
       "Donne à l'utilisateur d'un objet connecté un droit d'accès aux données qu'il génère et de partage avec un tiers, et impose aux services d'informatique en nuage de rendre le changement de fournisseur effectif.",
     concerne:
       "Fabricants d'objets connectés et fournisseurs de services associés, et tout fournisseur de service de traitement de données — IaaS, PaaS, SaaS.",
+    architecture:
+      "L'article 3 §1 est une **contrainte de conception à date fixe** : les produits mis sur le marché après le 12 septembre 2026 doivent être conçus pour que les données qu'ils génèrent soient accessibles à l'utilisateur par défaut. Cela signifie une API d'export documentée, un format lisible, et un modèle de données qui distingue ce qui appartient à l'utilisateur de ce qui appartient au fabricant. Côté fournisseur de nuage, l'**équivalence fonctionnelle** après migration suppose des interfaces standard et des données exportables sans transformation propriétaire.",
     sanction:
       "Fixée par chaque État membre ; pour les données personnelles, les plafonds du RGPD s'appliquent (art. 40).",
     articles: [
@@ -366,6 +389,8 @@ export const TEXTES: Texte[] = [
       "Organise la réutilisation des données détenues par le secteur public et crée un statut déclaré pour les intermédiaires de données et les organisations altruistes.",
     concerne:
       "Organismes du secteur public, services d'intermédiation de données, et organisations pratiquant l'altruisme en matière de données.",
+    architecture:
+      "Pour un intermédiaire de données, la neutralité imposée est une contrainte d'architecture : les données qui transitent ne peuvent pas être utilisées pour votre propre compte, ce qui interdit de les mêler à vos propres jeux d'entraînement ou d'analyse. En pratique, un cloisonnement strict, vérifiable et documenté.",
     articles: [
       {
         numero: 'art. 10-15',
@@ -386,6 +411,8 @@ export const TEXTES: Texte[] = [
       "Régit la modération des contenus, la transparence de la publicité et des systèmes de recommandation, avec des obligations croissant fortement avec la taille du service.",
     concerne:
       "Intermédiaires, hébergeurs, plateformes en ligne. Les micro et petites entreprises sont exemptées des obligations propres aux plateformes (art. 19).",
+    architecture:
+      "Le mécanisme de notification et action de l'article 16 est une fonctionnalité à construire : réception, accusé, décision motivée, voie de recours interne, le tout tracé. La transparence de la publicité et des systèmes de recommandation suppose de pouvoir expliquer un classement — donc de conserver les paramètres ayant produit chaque affichage.",
     sanction:
       "6 % du chiffre d'affaires mondial annuel (art. 52 §3).",
     articles: [
@@ -413,6 +440,8 @@ export const TEXTES: Texte[] = [
       "Impose des obligations de comportement aux très grandes plateformes désignées contrôleurs d'accès : interopérabilité, non-autopréférence, portabilité.",
     concerne:
       "Les contrôleurs d'accès désignés par la Commission, et indirectement leurs entreprises utilisatrices, qui en tirent des droits opposables.",
+    architecture:
+      "Pour une entreprise utilisatrice, le règlement ouvre des droits techniques exploitables : accès aux données que vous générez sur la plateforme, interopérabilité des services de messagerie, liberté de proposer d'autres conditions ailleurs. À traiter comme une réduction de dépendance possible, pas comme une charge.",
     sanction:
       "10 % du chiffre d'affaires mondial, 20 % en cas de récidive (art. 30).",
     articles: [
@@ -435,6 +464,8 @@ export const TEXTES: Texte[] = [
       "Refonte du régime de 1985 : le logiciel est désormais explicitement un produit, et une faille de sécurité non corrigée peut constituer un défaut engageant la responsabilité sans faute du fabricant.",
     concerne:
       "Fabricants de produits, y compris de logiciels autonomes et de systèmes d'IA. L'exploitation minière de données et la fourniture de mises à jour sont dans le champ.",
+    architecture:
+      "Le basculement à retenir : **une vulnérabilité non corrigée peut constituer un défaut**, et l'exonération pour défaut apparu après la mise en circulation tombe dès lors que le fabricant garde la maîtrise du produit — ce qui est le cas de tout logiciel mis à jour à distance. Conséquence de conception : la capacité à corriger et à distribuer un correctif n'est plus une commodité d'exploitation, c'est une pièce du dossier de responsabilité.",
     articles: [
       {
         numero: 'art. 4 §1',
@@ -465,6 +496,8 @@ export const TEXTES: Texte[] = [
       "Rend l'accessibilité opposable pour une liste de produits et de services numériques grand public, sur la base des exigences fonctionnelles de son annexe I.",
     concerne:
       "Commerce électronique, services bancaires aux consommateurs, livres numériques, transport de voyageurs, communications électroniques. Les micro-entreprises fournissant des services sont exemptées (art. 4 §5).",
+    architecture:
+      "L'accessibilité est la seule exigence de ce corpus qui se vérifie de l'extérieur en quelques minutes, et la seule qui se rattrape mal : un composant d'interface choisi sans gestion du focus, sans rôles ARIA et sans annonce des messages de statut se remplace, il ne se corrige pas. Elle se décide donc au choix de la bibliothèque de composants, pas à la recette.",
     articles: [
       {
         numero: 'annexe I',
@@ -484,6 +517,8 @@ export const TEXTES: Texte[] = [
     objet:
       "Remplace la directive 2006/42/CE et intègre les logiciels de sécurité et les comportements évolutifs : une machine dont la fonction de sécurité repose sur de l'IA relève simultanément de ce texte et de l'AI Act.",
     concerne: 'Fabricants de machines et de produits connexes.',
+    architecture:
+      "Point de jonction à connaître : un logiciel assurant une fonction de sécurité sur une machine relève de ce règlement **et** fait basculer le système dans le haut risque de l'annexe I de l'AI Act. Les deux dossiers de conformité se construisent ensemble ou pas du tout.",
     articles: [
       {
         numero: 'annexe I',
@@ -504,6 +539,8 @@ export const TEXTES: Texte[] = [
       "Volet resté en négociation après l'adoption du volet IA : il toucherait au RGPD (données pseudonymisées, intérêt légitime pour l'entraînement de modèles), à ePrivacy (refus des traceurs en un clic, délai de six mois avant nouvelle sollicitation), à NIS 2 et à DORA.",
     concerne:
       "Personne, pour l'instant. Ce n'est pas du droit positif : à surveiller, pas à appliquer. Aucune décision d'architecture ne devrait s'appuyer dessus avant publication au journal officiel.",
+    architecture:
+      "Rien. C'est précisément le message : aucune décision d'architecture ne devrait s'appuyer sur un texte non publié. Concevez sur le droit en vigueur, et notez les points où un assouplissement futur vous ferait gagner — pas l'inverse.",
     articles: [
       {
         numero: '—',

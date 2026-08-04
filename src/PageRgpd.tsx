@@ -8,6 +8,7 @@ import {
   ChampsSuivi,
   EnteteFiche,
   Manquants,
+  ModeEmploi,
   Onglets,
 } from './components/Pieces'
 import { useCollection } from './lib/collection'
@@ -56,7 +57,7 @@ export default function PageRgpd() {
     <Page
       chemin="/rgpd/"
       titre="Les registres du RGPD"
-      chapeau="Le règlement impose quatre pièces écrites, pas une : le registre du responsable de traitement, celui du sous-traitant — dont les mentions diffèrent —, le registre interne des violations, et le contrat de l'article 28 pour chaque fournisseur. Ensemble elles matérialisent le principe de responsabilité de l'article 5 §2 : il ne suffit pas d'être conforme, il faut pouvoir le démontrer."
+      chapeau="Quatre pièces écrites, pas une. Pour un architecte, le registre de l'article 30 n'est pas de la paperasse : c'est la cartographie des flux de données du système, et le seul document qui force à répondre à trois questions que la conception laisse souvent ouvertes — où part cette donnée, combien de temps la garde-t-on, et par quel mécanisme l'efface-t-on. Le remplir révèle des dépendances que le schéma d'architecture ne montre pas."
     >
       <Onglets<Onglet>
         valeur={onglet}
@@ -68,6 +69,28 @@ export default function PageRgpd() {
           { id: 'contrats', label: 'Contrats — art. 28', compte: contrats.items.length },
         ]}
       />
+
+      <ModeEmploi
+        quand="Le registre se remplit pendant la conception, pas après la mise en production. Une durée de conservation décidée après coup suppose de rétro-concevoir une purge dans les sauvegardes, les journaux et l'entrepôt analytique."
+        avecQui="Le DPO tient le registre, mais c'est vous qui savez où les données vont réellement. En pratique : vous remplissez les colonnes techniques, il valide les colonnes juridiques — base légale, condition de l'article 9, garanties de transfert."
+        livrable="Un registre exportable en JSON, une ligne par traitement, avec un responsable nommé et une date de revue. C'est la première pièce demandée en cas de contrôle."
+      >
+        <p>
+          L'ordre qui fonctionne : partez de vos flux, pas des finalités. Listez les
+          magasins de données et les intégrations sortantes du système, puis rattachez
+          chacun à une finalité — les flux qui n'en trouvent pas sont vos vraies
+          non-conformités, et ce sont presque toujours les mêmes : télémétrie, journaux
+          applicatifs contenant des identifiants, jeu de données de recette copié depuis
+          la production.
+        </p>
+        <p>
+          Deux colonnes vous concernent directement. <strong>Les délais d'effacement</strong>{' '}
+          ne sont tenables que si une purge existe : si vous ne pouvez pas la nommer, la
+          durée n'est pas une durée. <strong>Les transferts hors EEE</strong> incluent le
+          simple accès à distance — un prestataire d'astreinte qui se connecte depuis
+          l'Inde transfère, même sans copie de données.
+        </p>
+      </ModeEmploi>
 
       {onglet === 'responsable' && <BlocResponsable c={traitements} />}
       {onglet === 'sous-traitant' && <BlocSousTraitant c={sousTraitances} />}

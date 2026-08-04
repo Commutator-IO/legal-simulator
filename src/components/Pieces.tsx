@@ -275,3 +275,64 @@ export function Amorce({ titre, children }: { titre: string; children: React.Rea
     </div>
   )
 }
+
+/**
+ * Le mode d'emploi d'un outil, en mission.
+ *
+ * Un formulaire de conformité posé sans contexte laisse la question la plus
+ * utile sans réponse : *quand est-ce que je remplis ça, avec qui, et qu'est-ce
+ * que j'en sors ?* C'est particulièrement vrai pour un architecte, qui
+ * n'exécute pas une procédure mais prépare une décision — et dont la valeur
+ * ajoutée tient souvent à avoir posé la question au bon moment du projet.
+ *
+ * Les trois champs sont volontairement rigides : le moment, l'interlocuteur,
+ * le livrable. Un outil dont on ne sait pas nommer le livrable n'a pas sa place
+ * dans une mission.
+ */
+export function ModeEmploi({
+  quand,
+  avecQui,
+  livrable,
+  children,
+}: {
+  /** À quel moment du projet on s'en sert — et pourquoi pas plus tard. */
+  quand: string
+  /** Qui doit être dans la pièce : l'architecte seul ne tranche presque rien. */
+  avecQui: string
+  /** Ce qu'on remet à la fin. */
+  livrable: string
+  /** La marche à suivre, en deux ou trois phrases. */
+  children?: React.ReactNode
+}) {
+  return (
+    <details className="mb-8 rounded-[var(--radius-card)] border border-brand-200 bg-brand-50/60">
+      <summary className="cursor-pointer list-none px-5 py-3.5 text-sm font-semibold text-brand-800">
+        <span className="mr-1.5" aria-hidden="true">
+          ▸
+        </span>
+        Dans votre mission — quand s'en servir, avec qui, ce que vous produisez
+      </summary>
+      <div className="border-t border-brand-200 px-5 py-4">
+        <dl className="grid gap-4 sm:grid-cols-3">
+          {[
+            { t: 'Quand', v: quand },
+            { t: 'Avec qui', v: avecQui },
+            { t: 'Ce que vous produisez', v: livrable },
+          ].map((x) => (
+            <div key={x.t}>
+              <dt className="text-xs font-semibold tracking-wide text-brand-700 uppercase">
+                {x.t}
+              </dt>
+              <dd className="mt-1 text-sm leading-relaxed text-ink-700">{x.v}</dd>
+            </div>
+          ))}
+        </dl>
+        {children && (
+          <div className="mt-4 space-y-2 border-t border-brand-200/70 pt-4 text-sm leading-relaxed text-ink-700">
+            {children}
+          </div>
+        )}
+      </div>
+    </details>
+  )
+}

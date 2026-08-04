@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Page } from './components/Cadre'
 import { Encadre, Pastille, Stat } from './components/Blocs'
+import { ModeEmploi } from './components/Pieces'
 import { Frise } from './components/Frise'
 import { ECHEANCES, aujourdhui, instant, joursRestants, statut } from './lib/calendrier'
 import type { Echeance, Statut } from './lib/calendrier'
@@ -44,8 +45,26 @@ export default function PageCalendrier() {
     <Page
       chemin="/calendrier/"
       titre="Calendrier d'application"
-      chapeau="Une échéance est la date à laquelle une obligation devient opposable — pas celle de l'adoption du texte, ni celle de son entrée en vigueur. L'AI Act est en vigueur depuis août 2024 ; ses obligations sur les systèmes à haut risque de l'annexe III ne mordront qu'en décembre 2027. Confondre les deux fait paniquer trop tôt, ou découvrir trop tard qu'une échéance intermédiaire est passée."
+      chapeau="Une échéance est la date à laquelle une obligation devient opposable — pas celle de l'adoption du texte ni celle de son entrée en vigueur. Pour un architecte, la date qui compte n'est jamais celle-là : c'est la date moins le délai de conception. Une SBOM se met en place en une semaine au début d'un projet et en un trimestre à la fin ; une période de support de cinq ans se décide avant le premier client, pas après."
     >
+      <ModeEmploi
+        quand="Au cadrage, puis à chaque comité de pilotage. C'est l'écran qui transforme une obligation en jalon de planning."
+        avecQui="Le chef de projet et le sponsor. Les échéances à moins d'un an relèvent du budget en cours ; celles au-delà relèvent de la trajectoire."
+        livrable="Une liste de jalons datés, chacun rattaché à une décision de conception à prendre en amont — pas une liste de dates à surveiller."
+      >
+        <p>
+          La bonne lecture : pour chaque échéance retenue, reculez du délai de mise en
+          œuvre et posez <em>ce</em> jalon-là dans le planning. Un correctif de sécurité
+          distribuable pendant cinq ans suppose une infrastructure de distribution qui
+          survit au produit ; ça ne se rattrape pas trois mois avant.
+        </p>
+        <p>
+          Le creux de dix-huit mois qui suit l'automne 2026 est un piège de trajectoire :
+          il vient du report décidé par l'omnibus, il déplace la charge sans la réduire,
+          et deux échéances lourdes se télescopent à neuf jours d'intervalle en décembre
+          2027 — sur les mêmes équipes.
+        </p>
+      </ModeEmploi>
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat valeur={String(futures.length)} libelle="échéances à venir" teinte="brand" />
         <Stat
