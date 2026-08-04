@@ -11,13 +11,17 @@ export const DEPOT = 'https://github.com/Commutator-IO/legal-simulator'
 /**
  * L'ordre des pages est celui du raisonnement, pas celui de l'importance :
  * d'abord ce qui vous concerne, puis quand cela tombe, puis ce que disent les
- * textes, puis les trois outils qui produisent les pièces du dossier.
+ * textes — et ensuite seulement les cinq outils qui produisent les pièces du
+ * dossier, groupés par domaine parce que c'est ainsi qu'on travaille : on
+ * s'occupe du RGPD un jour, du produit un autre.
  */
 export const PAGES: { chemin: string; libelle: string }[] = [
   { chemin: '/', libelle: 'Périmètre' },
   { chemin: '/calendrier/', libelle: 'Calendrier' },
   { chemin: '/textes/', libelle: 'Les textes' },
-  { chemin: '/qualification/', libelle: 'Qualification' },
-  { chemin: '/registre/', libelle: 'Registre RGPD' },
+  { chemin: '/rgpd/', libelle: 'Registres RGPD' },
+  { chemin: '/analyses/', libelle: 'Analyses' },
+  { chemin: '/ia/', libelle: 'IA' },
+  { chemin: '/produit/', libelle: 'Produit' },
   { chemin: '/responsabilites/', libelle: 'Responsabilités' },
 ]

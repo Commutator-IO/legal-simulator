@@ -153,9 +153,13 @@ export default function PagePerimetre() {
               <Encadre teinte="brand" titre="Ce que le périmètre ne dit pas">
                 Il retient des textes, pas des obligations. Un même règlement pèse
                 très différemment selon que vous êtes fournisseur ou déployeur, et
-                selon la catégorie de votre produit — c'est ce que tranche la{' '}
-                <a href="/qualification/" className="font-medium underline">
-                  page de qualification
+                selon la catégorie de votre produit — c'est ce que tranchent{' '}
+                <a href="/ia/" className="font-medium underline">
+                  l'inventaire des systèmes d'IA
+                </a>{' '}
+                et le{' '}
+                <a href="/produit/" className="font-medium underline">
+                  catalogue des produits
                 </a>
                 . Pour les directives retenues, lisez aussi la loi nationale de
                 transposition : c'est elle qui fixe les seuils et l'autorité
@@ -169,10 +173,10 @@ export default function PagePerimetre() {
       <section className="mt-14">
         <h2 className="titre mb-1 text-lg text-ink-900">Par où commencer</h2>
         <p className="mb-5 max-w-3xl text-sm leading-relaxed text-ink-600">
-          Les quatre pages qui suivent sont dans l'ordre où l'on s'en sert : situer,
-          dater, qualifier, documenter.
+          Elles sont dans l'ordre où l'on s'en sert : situer, dater, lire le texte,
+          puis documenter — domaine par domaine, parce que c'est ainsi qu'on travaille.
         </p>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[
             {
               href: '/calendrier/',
@@ -187,16 +191,28 @@ export default function PagePerimetre() {
                 "Une fiche par règlement : objet, qui est visé, plafond de sanction, articles qu'on ouvre en pratique, et le lien EUR-Lex.",
             },
             {
-              href: '/qualification/',
-              titre: 'La qualification',
-              texte:
-                "Deux arbres de décision : le niveau de risque d'un système d'IA, et la catégorie d'un produit sous le CRA. Ils rendent leur raisonnement, article par article.",
-            },
-            {
-              href: '/registre/',
+              href: '/rgpd/',
               titre: 'Les registres',
               texte:
-                "Le registre de l'article 30, le criblage d'analyse d'impact, le registre de responsabilité et le calculateur de délais de notification.",
+                "Les quatre pièces écrites du RGPD : le registre du responsable, celui du sous-traitant — dont les mentions diffèrent —, le registre des violations, et les huit mentions de l'article 28.",
+            },
+            {
+              href: '/analyses/',
+              titre: 'Les analyses',
+              texte:
+                "Impact, intérêt légitime, transferts, droits fondamentaux. Quatre analyses écrites imposées avant d'agir, chacune concluant par une décision plutôt que par une note.",
+            },
+            {
+              href: '/ia/',
+              titre: "L'inventaire IA",
+              texte:
+                "Le livrable réel de l'AI Act : l'inventaire, avec la qualification en colonne, la documentation de l'annexe IV et le journal de maîtrise de l'article 4.",
+            },
+            {
+              href: '/produit/',
+              titre: 'Le produit',
+              texte:
+                "Catalogue et catégorie CRA, évaluation des risques de l'article 13 §2, déclaration UE de conformité de l'annexe V, et audit d'accessibilité.",
             },
           ].map((c) => (
             <a

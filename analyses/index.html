@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Filet de sécurité pour l'hébergement statique : après un redéploiement,
+      // une page encore en cache peut référencer un asset dont le nom a changé,
+      // d'où une page blanche. On détecte l'échec de chargement et on recharge
+      // une fois — un rechargement revalide le HTML et récupère les bons noms.
+      (function () {
+        try {
+          addEventListener(
+            'error',
+            function (e) {
+              var el = e.target;
+              var url = el && (el.src || el.href);
+              if (url && /\/assets\//.test(url) && !sessionStorage.getItem('rechargeAsset')) {
+                sessionStorage.setItem('rechargeAsset', '1');
+                location.reload();
+              }
+            },
+            true,
+          );
+          addEventListener('load', function () {
+            sessionStorage.removeItem('rechargeAsset');
+          });
+        } catch (_) {}
+      })();
+    </script>
+    <meta name="description" content="Quatre analyses écrites imposées avant d'agir : analyse d'impact de l'article 35, mise en balance de l'intérêt légitime, analyse d'impact du transfert issue de Schrems II, et analyse des droits fondamentaux de l'article 27 de l'AI Act." />
+    <meta property="og:title" content="Analyses — impact RGPD, intérêt légitime, transferts, droits fondamentaux" />
+    <meta property="og:description" content="Quatre analyses écrites imposées avant d'agir : analyse d'impact de l'article 35, mise en balance de l'intérêt légitime, analyse d'impact du transfert issue de Schrems II, et analyse des droits fondamentaux de l'article 27 de l'AI Act." />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href="https://legal.commutator.io/analyses/" />
+    <title>Analyses — impact RGPD, intérêt légitime, transferts, droits fondamentaux</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/mainAnalyses.tsx"></script>
+  </body>
+</html>

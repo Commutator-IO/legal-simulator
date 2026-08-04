@@ -10,6 +10,10 @@ const t = (p: Partial<Traitement> = {}): Traitement => ({
 /** Un traitement dont toutes les mentions inconditionnelles sont remplies. */
 const complet = (p: Partial<Traitement> = {}): Traitement =>
   t({
+    // La traçabilité fait partie des mentions comptées : c'est le premier
+    // élément qu'un contrôleur regarde, et l'exclure du dénominateur
+    // reviendrait à la traiter comme facultative.
+    suivi: { responsable: 'A. Martin', validateur: 'DPO', derniereRevue: '2026-07-01' },
     nom: 'Gestion de la paie',
     finalites: 'Établir les bulletins et déclarer les cotisations',
     baseLegale: 'obligation-legale',
@@ -22,23 +26,25 @@ const complet = (p: Partial<Traitement> = {}): Traitement =>
   })
 
 describe('mentions dues', () => {
-  it('exige les huit mentions de base', () => {
-    expect(mentions(t())).toHaveLength(8)
+  it('exige les huit mentions de l’article 30 plus la traçabilité', () => {
+    const m = mentions(t())
+    expect(m).toHaveLength(10)
+    expect(m.filter((x) => x.article === 'art. 5 §2')).toHaveLength(2)
   })
 
   it('ajoute la mise en balance quand la base est l’intérêt légitime', () => {
     const m = mentions(t({ baseLegale: 'interet-legitime' }))
-    expect(m).toHaveLength(9)
+    expect(m).toHaveLength(11)
     expect(m.some((x) => x.article === 'art. 6 §1 f')).toBe(true)
   })
 
   it('ajoute la condition de l’article 9 pour les données sensibles', () => {
-    expect(mentions(t({ donneesSensibles: true }))).toHaveLength(9)
+    expect(mentions(t({ donneesSensibles: true }))).toHaveLength(11)
   })
 
   it('ajoute pays et garantie en cas de transfert hors EEE', () => {
     const m = mentions(t({ transfert: { horsEee: true, pays: '', garantie: '' } }))
-    expect(m).toHaveLength(10)
+    expect(m).toHaveLength(12)
     expect(m.some((x) => x.article === 'art. 46')).toBe(true)
   })
 })

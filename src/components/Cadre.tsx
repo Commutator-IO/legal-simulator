@@ -5,7 +5,7 @@ import { DEPOT, PAGES } from '../lib/site'
  * En-tête et pied partagés par toutes les pages.
  *
  * Le site est hébergé statiquement : chaque outil est une vraie page plutôt
- * qu'une route côté client. GitHub Pages sert /registre/ depuis son propre
+ * qu'une route côté client. GitHub Pages sert /rgpd/ depuis son propre
  * index.html, sans redirection, et un lien partagé vers un registre survit à
  * tout. Pour un site dont les pages servent de pièces de dossier, c'est la
  * seule architecture défendable.
@@ -20,7 +20,7 @@ function estActif(chemin: string, courant: string): boolean {
 
 export function Entete({ chemin }: { chemin: string }) {
   // Sous md, les onglets deviennent un menu plutôt qu'une rangée qui défile :
-  // six noms dans une barre de 375 pixels obligent à deviner ce qui est hors
+  // huit noms dans une barre de 375 pixels obligent à deviner ce qui est hors
   // écran, et personne ne devrait avoir à balayer une barre de navigation pour
   // savoir où il peut aller.
   const [ouvert, setOuvert] = useState(false)

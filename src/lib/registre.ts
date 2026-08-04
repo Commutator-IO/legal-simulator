@@ -1,14 +1,29 @@
 /**
- * Le registre des activités de traitement (RGPD, art. 30) et le criblage
- * d'analyse d'impact (art. 35).
+ * Les registres du RGPD.
  *
- * Le registre est la première pièce demandée en cas de contrôle, et la seule
- * qui matérialise le principe de responsabilité de l'article 5 §2. On tient
- * ici exactement les mentions du §1, plus quatre colonnes que le règlement
- * n'impose pas — base légale, données sensibles, sous-traitants, besoin
- * d'analyse d'impact — parce qu'un registre qui ne les porte pas oblige à
- * refaire tout le travail dès la première question de l'autorité.
+ * Trois registres, et non un : le règlement en impose autant, et la première
+ * version de ce site n'en offrait qu'un.
+ *
+ * — **Article 30 §1**, tenu par le responsable de traitement. Le plus connu.
+ * — **Article 30 §2**, tenu par le sous-traitant. Mentions différentes, plus
+ *   courtes, organisées par client et non par finalité — un sous-traitant ne
+ *   décide pas des finalités, il ne peut donc pas les inscrire. La plupart des
+ *   éditeurs de logiciel doivent celui-ci, et beaucoup l'ignorent.
+ * — **Article 33 §5**, le registre interne des violations, qui doit porter
+ *   *toutes* les violations, y compris celles qu'on a choisi de ne pas
+ *   notifier, avec le motif de ce choix. C'est lui que l'autorité demande pour
+ *   vérifier que l'absence de notification était réfléchie et non subie.
  */
+
+import type { Suivi } from './suivi'
+import { suiviVide } from './suivi'
+import { manquants, part } from './collection'
+
+export type Mention = { champ: string; article: string; valeur: string }
+
+// ---------------------------------------------------------------------------
+// Article 30 §1 — registre du responsable de traitement
+// ---------------------------------------------------------------------------
 
 export type Transfert = {
   /** Vrai dès qu'un destinataire, y compris un sous-traitant, est hors EEE. */
@@ -20,12 +35,13 @@ export type Transfert = {
 
 export type Traitement = {
   id: string
+  suivi: Suivi
   nom: string
   /** Art. 30 §1 b. */
   finalites: string
   /** Art. 6 §1 a à f. */
   baseLegale: BaseLegale | ''
-  /** Précision exigée lorsque la base est l'intérêt légitime (art. 6 §1 f). */
+  /** Renvoi vers la mise en balance tenue dans les analyses (art. 6 §1 f). */
   interetLegitime: string
   /** Art. 30 §1 c. */
   categoriesPersonnes: string
@@ -86,7 +102,7 @@ export const BASES_LEGALES: { id: BaseLegale; label: string; note: string }[] = 
   {
     id: 'interet-legitime',
     label: 'Intérêt légitime',
-    note: "Art. 6 §1 f. La plus souple, et la seule qui exige une mise en balance écrite avec les droits des personnes. Fermée aux autorités publiques agissant dans l'exercice de leurs missions.",
+    note: "Art. 6 §1 f. La plus souple, et la seule qui exige une mise en balance écrite. Fermée aux autorités publiques agissant dans l'exercice de leurs missions.",
   },
 ]
 
@@ -134,7 +150,7 @@ export const CRITERES_RISQUE = [
   {
     id: 'innovation',
     label: 'Usage innovant ou nouvelle technologie',
-    note: "Objets connectés, biométrie, intelligence artificielle. Ce critère est presque toujours rempli dès qu'un modèle appris intervient.",
+    note: "Objets connectés, biométrie, intelligence artificielle. Presque toujours rempli dès qu'un modèle appris intervient.",
   },
   {
     id: 'blocage',
@@ -146,6 +162,7 @@ export const CRITERES_RISQUE = [
 export function traitementVide(id: string): Traitement {
   return {
     id,
+    suivi: suiviVide(),
     nom: '',
     finalites: '',
     baseLegale: '',
@@ -164,18 +181,7 @@ export function traitementVide(id: string): Traitement {
   }
 }
 
-export type Mention = { champ: string; article: string; valeur: string }
-
-/**
- * Les mentions dues pour *ce* traitement, avec l'article qui les impose.
- *
- * La liste est construite en fonction des réponses plutôt que fixée une fois
- * pour toutes : la garantie de transfert n'est due que s'il y a transfert, et
- * la condition de l'article 9 que s'il y a données sensibles. Un dénominateur
- * qui compterait des mentions sans objet plafonnerait le registre à 80 %
- * quoi qu'on fasse — et un indicateur qui ne peut pas atteindre 100 % cesse
- * très vite d'être regardé.
- */
+/** Les mentions dues pour *ce* traitement, avec l'article qui les impose. */
 export function mentions(t: Traitement): Mention[] {
   const m: Mention[] = [
     { champ: 'Nom du traitement', article: 'usage', valeur: t.nom },
@@ -197,11 +203,12 @@ export function mentions(t: Traitement): Mention[] {
       valeur: t.destinataires,
     },
     { champ: "Délais d'effacement", article: 'art. 30 §1 f', valeur: t.conservation },
-    {
-      champ: 'Mesures de sécurité',
-      article: 'art. 30 §1 g',
-      valeur: t.mesuresSecurite,
-    },
+    { champ: 'Mesures de sécurité', article: 'art. 30 §1 g', valeur: t.mesuresSecurite },
+    // La traçabilité entre dans le dénominateur : elle n'est pas exigée par
+    // l'article 30, mais c'est le premier élément qu'un contrôleur regarde, et
+    // l'exclure reviendrait à la traiter comme facultative.
+    { champ: 'Responsable de la fiche', article: 'art. 5 §2', valeur: t.suivi.responsable },
+    { champ: 'Date de dernière revue', article: 'art. 5 §2', valeur: t.suivi.derniereRevue },
   ]
 
   if (t.baseLegale === 'interet-legitime') {
@@ -234,18 +241,236 @@ export function mentions(t: Traitement): Mention[] {
   return m
 }
 
-/** Les mentions dues et non renseignées. */
-export function champsManquants(t: Traitement): { champ: string; article: string }[] {
-  return mentions(t)
-    .filter((m) => !m.valeur.trim())
-    .map(({ champ, article }) => ({ champ, article }))
+export const champsManquants = (t: Traitement) => manquants(mentions(t))
+export const completude = (t: Traitement) => part(mentions(t))
+
+// ---------------------------------------------------------------------------
+// Article 30 §2 — registre du sous-traitant
+// ---------------------------------------------------------------------------
+
+/**
+ * Le registre du sous-traitant s'organise **par client**, pas par finalité.
+ *
+ * C'est la différence de fond avec le §1, et elle n'est pas cosmétique : un
+ * sous-traitant ne détermine ni les finalités ni les durées de conservation,
+ * il ne peut donc pas les inscrire — il inscrit les catégories de traitements
+ * qu'il effectue *pour le compte de* chaque responsable. Recopier le modèle du
+ * §1 en changeant le titre produit un registre faux, qui prétend décider de ce
+ * qu'on ne décide pas.
+ */
+export type Sous_traitance = {
+  id: string
+  suivi: Suivi
+  /** Art. 30 §2 a — le client, responsable de traitement. */
+  client: string
+  contactClient: string
+  /** Art. 30 §2 b — les catégories de traitements effectués pour ce client. */
+  categoriesTraitements: string
+  /** Art. 30 §2 c. */
+  transfert: Transfert
+  /** Art. 30 §2 d, renvoyant à l'art. 32 §1. */
+  mesuresSecurite: string
+  /** Sous-traitants ultérieurs — art. 28 §2 et §4. */
+  sousTraitantsUlterieurs: string
+  /** Le client a-t-il autorisé ces sous-traitants ultérieurs, et comment ? */
+  autorisationUlterieurs: string
+  /** Référence du contrat portant les huit mentions de l'art. 28 §3. */
+  contrat: string
 }
 
-/** Part des mentions dues effectivement renseignées, entre 0 et 1. */
-export function completude(t: Traitement): number {
-  const m = mentions(t)
-  return m.length === 0 ? 1 : m.filter((x) => x.valeur.trim()).length / m.length
+export function sousTraitanceVide(id: string): Sous_traitance {
+  return {
+    id,
+    suivi: suiviVide(),
+    client: '',
+    contactClient: '',
+    categoriesTraitements: '',
+    transfert: { horsEee: false, pays: '', garantie: '' },
+    mesuresSecurite: '',
+    sousTraitantsUlterieurs: '',
+    autorisationUlterieurs: '',
+    contrat: '',
+  }
 }
+
+export function mentionsSousTraitance(s: Sous_traitance): Mention[] {
+  const m: Mention[] = [
+    { champ: 'Responsable de traitement (client)', article: 'art. 30 §2 a', valeur: s.client },
+    { champ: 'Coordonnées du client', article: 'art. 30 §2 a', valeur: s.contactClient },
+    {
+      champ: 'Catégories de traitements effectués',
+      article: 'art. 30 §2 b',
+      valeur: s.categoriesTraitements,
+    },
+    { champ: 'Mesures de sécurité', article: 'art. 30 §2 d', valeur: s.mesuresSecurite },
+    { champ: 'Référence du contrat', article: 'art. 28 §3', valeur: s.contrat },
+    { champ: 'Responsable de la fiche', article: 'art. 5 §2', valeur: s.suivi.responsable },
+    { champ: 'Date de dernière revue', article: 'art. 5 §2', valeur: s.suivi.derniereRevue },
+  ]
+  if (s.transfert.horsEee) {
+    m.push({ champ: 'Pays de destination', article: 'art. 30 §2 c', valeur: s.transfert.pays })
+    m.push({ champ: 'Garantie encadrant le transfert', article: 'art. 46', valeur: s.transfert.garantie })
+  }
+  if (s.sousTraitantsUlterieurs.trim()) {
+    m.push({
+      champ: 'Autorisation des sous-traitants ultérieurs',
+      article: 'art. 28 §2',
+      valeur: s.autorisationUlterieurs,
+    })
+  }
+  return m
+}
+
+export const completudeSousTraitance = (s: Sous_traitance) => part(mentionsSousTraitance(s))
+export const champsManquantsSousTraitance = (s: Sous_traitance) =>
+  manquants(mentionsSousTraitance(s))
+
+// ---------------------------------------------------------------------------
+// Article 33 §5 — registre interne des violations
+// ---------------------------------------------------------------------------
+
+export type Violation = {
+  id: string
+  suivi: Suivi
+  reference: string
+  /** Instant de la prise de connaissance, format `datetime-local`. */
+  connaissance: string
+  /** Ce qui s'est passé — art. 33 §3 a. */
+  nature: string
+  /** Confidentialité, intégrité, disponibilité : les trois peuvent être atteintes. */
+  atteintes: string[]
+  categoriesPersonnes: string
+  /** Nombre approximatif : l'article dit « approximatif », l'exactitude n'est pas due. */
+  nombrePersonnes: string
+  categoriesDonnees: string
+  /** Art. 33 §3 c. */
+  consequences: string
+  /** Art. 33 §3 d. */
+  mesures: string
+  /** La décision de notifier ou non, et son motif — le cœur du registre. */
+  notifieeAutorite: DecisionNotification
+  motifNonNotification: string
+  /** Art. 34 : information des personnes concernées. */
+  notifieePersonnes: DecisionNotification
+  motifNonInformation: string
+  /** Date d'envoi effective à l'autorité, si notifiée. */
+  dateNotification: string
+}
+
+export type DecisionNotification = 'oui' | 'non' | 'a-decider'
+
+export const DECISIONS: { id: DecisionNotification; label: string }[] = [
+  { id: 'a-decider', label: 'À décider' },
+  { id: 'oui', label: 'Notifiée' },
+  { id: 'non', label: 'Non notifiée' },
+]
+
+export const ATTEINTES = [
+  {
+    id: 'confidentialite',
+    label: 'Confidentialité',
+    note: 'Accès ou divulgation non autorisés.',
+  },
+  {
+    id: 'integrite',
+    label: 'Intégrité',
+    note: 'Altération non autorisée des données.',
+  },
+  {
+    id: 'disponibilite',
+    label: 'Disponibilité',
+    note: "Perte d'accès ou destruction. La perte de la seule sauvegarde en est une, même sans intrusion — c'est le cas le plus souvent oublié.",
+  },
+]
+
+export function violationVide(id: string): Violation {
+  return {
+    id,
+    suivi: suiviVide(),
+    reference: '',
+    connaissance: '',
+    nature: '',
+    atteintes: [],
+    categoriesPersonnes: '',
+    nombrePersonnes: '',
+    categoriesDonnees: '',
+    consequences: '',
+    mesures: '',
+    notifieeAutorite: 'a-decider',
+    motifNonNotification: '',
+    notifieePersonnes: 'a-decider',
+    motifNonInformation: '',
+    dateNotification: '',
+  }
+}
+
+export function mentionsViolation(v: Violation): Mention[] {
+  const m: Mention[] = [
+    { champ: 'Référence interne', article: 'usage', valeur: v.reference },
+    { champ: 'Prise de connaissance', article: 'art. 33 §1', valeur: v.connaissance },
+    { champ: 'Nature de la violation', article: 'art. 33 §3 a', valeur: v.nature },
+    {
+      champ: 'Catégories de personnes concernées',
+      article: 'art. 33 §3 a',
+      valeur: v.categoriesPersonnes,
+    },
+    {
+      champ: 'Nombre approximatif de personnes',
+      article: 'art. 33 §3 a',
+      valeur: v.nombrePersonnes,
+    },
+    { champ: 'Conséquences probables', article: 'art. 33 §3 c', valeur: v.consequences },
+    { champ: 'Mesures prises', article: 'art. 33 §3 d', valeur: v.mesures },
+    { champ: 'Responsable du dossier', article: 'art. 5 §2', valeur: v.suivi.responsable },
+  ]
+  // Le motif n'est dû que si l'on a décidé de ne pas notifier — mais il l'est
+  // alors absolument : c'est la pièce qui distingue un choix documenté d'un
+  // oubli, et c'est exactement ce que l'autorité vient chercher.
+  if (v.notifieeAutorite === 'non') {
+    m.push({
+      champ: 'Motif de non-notification',
+      article: 'art. 33 §1',
+      valeur: v.motifNonNotification,
+    })
+  }
+  if (v.notifieeAutorite === 'oui') {
+    m.push({
+      champ: "Date d'envoi à l'autorité",
+      article: 'art. 33 §1',
+      valeur: v.dateNotification,
+    })
+  }
+  if (v.notifieePersonnes === 'non') {
+    m.push({
+      champ: 'Motif de non-information des personnes',
+      article: 'art. 34 §3',
+      valeur: v.motifNonInformation,
+    })
+  }
+  return m
+}
+
+export const completudeViolation = (v: Violation) => part(mentionsViolation(v))
+export const champsManquantsViolation = (v: Violation) => manquants(mentionsViolation(v))
+
+/**
+ * Le retard sur les 72 heures de l'article 33 §1.
+ *
+ * Rend `undefined` tant que la décision n'est pas prise ou que la date d'envoi
+ * manque : afficher « à l'heure » pour une notification qui n'est pas partie
+ * serait le pire des affichages.
+ */
+export function retardNotification(v: Violation): number | undefined {
+  if (v.notifieeAutorite !== 'oui' || !v.connaissance || !v.dateNotification) return undefined
+  const t0 = new Date(v.connaissance).getTime()
+  const t1 = new Date(v.dateNotification).getTime()
+  if (!Number.isFinite(t0) || !Number.isFinite(t1)) return undefined
+  return t1 - t0 - 72 * 3_600_000
+}
+
+// ---------------------------------------------------------------------------
+// Criblage de l'analyse d'impact — article 35
+// ---------------------------------------------------------------------------
 
 export type Aipd = {
   requise: boolean
@@ -254,11 +479,6 @@ export type Aipd = {
   motif: string
 }
 
-/**
- * Criblage de l'article 35. Deux voies mènent à l'obligation : les trois cas
- * du §3, qui la rendent certaine, et le faisceau de critères du CEPD, qui la
- * rend probable au-delà de deux.
- */
 export function aipd(t: Traitement): Aipd {
   if (t.listeAutorite) {
     return {

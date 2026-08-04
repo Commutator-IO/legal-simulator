@@ -39,9 +39,21 @@ Trois règles tenues partout :
 | `/` | Douze questions sur votre activité → les textes applicables, avec la raison de chacun et ses échéances |
 | `/calendrier/` | Vingt-trois échéances de 2018 à 2030 sur une frise **linéaire dans le temps**, ce qui fait voir la grappe de l'automne 2026 et le creux que le report a ouvert derrière elle |
 | `/textes/` | Une fiche par acte : objet, qui est visé, plafond de sanction, articles qu'on ouvre en pratique, lien EUR-Lex |
-| `/qualification/` | Deux arbres de décision — niveau de risque d'un système d'IA, catégorie CRA d'un produit — qui rendent leur raisonnement |
-| `/registre/` | Registre de l'article 30 avec indicateur de complétude, et criblage d'analyse d'impact de l'article 35 |
-| `/responsabilites/` | Registre de responsabilité sur dix-neuf obligations transverses, et calculateur superposant les quatre horloges de notification d'incident |
+| `/rgpd/` | Les quatre registres écrits : responsable (art. 30 §1), sous-traitant (art. 30 §2), violations (art. 33 §5), et les huit mentions de l'article 28 |
+| `/analyses/` | Impact (art. 35), intérêt légitime (art. 6 §1 f), transfert (Schrems II), droits fondamentaux (AI Act art. 27) |
+| `/ia/` | Inventaire des systèmes avec qualification, documentation de l'annexe IV, journal de maîtrise de l'article 4 |
+| `/produit/` | Catalogue et catégorie CRA, évaluation des risques (art. 13 §2), déclaration UE de conformité (annexe V), audit d'accessibilité EN 301 549 |
+| `/responsabilites/` | Registre de responsabilité, calculateur de délais de notification, registre d'information DORA (art. 28 §3) |
+
+Deux principes de structure, appris à la première version :
+
+- **Tout est multi-instances.** Une organisation n'a pas *un* système d'IA, elle
+  en a douze ; un fabricant a un catalogue, pas un produit. Le livrable réel de
+  l'AI Act est d'ailleurs l'inventaire — la qualification n'en est qu'une
+  colonne.
+- **Toute pièce porte un responsable, un validateur et une date de revue.** Un
+  contrôleur regarde la date avant de lire le fond, parce qu'elle dit seule si
+  le document est vivant ou s'il a été produit une fois pour un audit.
 
 ## Le corpus
 
@@ -81,7 +93,7 @@ nulle part dans les composants — un arbre de décision enfoui dans du JSX ne p
 
 ### Les tests
 
-89 tests, dont les valeurs attendues viennent des textes publiés au journal
+143 tests, dont les valeurs attendues viennent des textes publiés au journal
 officiel, jamais de ce que le code produit. Ce qu'ils gardent en priorité :
 
 - les dates d'application, y compris celles déplacées par l'omnibus, et
@@ -90,7 +102,15 @@ officiel, jamais de ce que le code produit. Ce qu'ils gardent en priorité :
   l'article 6 §3 *avant* qu'on l'examine, sinon un outil de tri de CV ressort
   « tâche procédurale étroite » ;
 - l'arithmétique des délais d'incident : « un mois » est un mois calendaire, et
-  la notification initiale DORA retient la plus proche de deux bornes.
+  la notification initiale DORA retient la plus proche de deux bornes ;
+- les choix d'agrégation qui portent un jugement : le risque d'une AIPD est le
+  **maximum** de gravité et vraisemblance et non leur produit, l'accessibilité
+  retient le **maillon le plus faible** et non une moyenne, et l'article 28 est
+  **binaire** — sept mentions sur huit ne valent pas 87 % ;
+- le fait que la consultation préalable de l'article 36 se déclenche sur le
+  risque *résiduel*, jamais sur le risque brut ;
+- le registre du sous-traitant, qui ne doit jamais réclamer les finalités : un
+  sous-traitant ne les détermine pas.
 
 ## Avertissement
 

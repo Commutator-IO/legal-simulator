@@ -1,7 +1,25 @@
 import { useMemo, useState } from 'react'
 import { Page } from './components/Cadre'
-import { Case, Date_, Segments, Texte } from './components/Champs'
+import { Case, Date_, Texte } from './components/Champs'
 import { Encadre, Jauge, Obligations, Pastille, Stat } from './components/Blocs'
+import {
+  Amorce,
+  BarreOutils,
+  ChampsSuivi,
+  EnteteFiche,
+  Manquants,
+  Onglets,
+} from './components/Pieces'
+import { useCollection } from './lib/collection'
+import type { Collection } from './lib/collection'
+import {
+  SUBSTITUABILITES,
+  accordVide,
+  champsManquantsAccord,
+  completudeAccord,
+  etatRegistre,
+} from './lib/dora'
+import type { Accord } from './lib/dora'
 import {
   OBLIGATIONS,
   STATUTS,
@@ -25,27 +43,31 @@ const DOMAINES_OBLIGATION: Record<Domaine, { label: string; teinte: Teinte }> = 
   produit: { label: 'Produit', teinte: 'jade' },
 }
 
+type Onglet = 'registre' | 'incident' | 'dora'
+
 export default function PageResponsabilites() {
-  const [onglet, setOnglet] = useState<'registre' | 'incident'>('registre')
+  const [onglet, setOnglet] = useState<Onglet>('registre')
+  const accords = useCollection<Accord>('laws.accordsDora', accordVide)
 
   return (
     <Page
       chemin="/responsabilites/"
       titre="Responsabilités et incidents"
-      chapeau="Quatre textes disent la même chose de quatre façons : une obligation que personne ne porte nommément n'est portée par personne. Cette page tient le registre qui met un nom en face de chaque obligation transverse — puis, pour le jour où cela tourne mal, le calculateur qui superpose les quatre horloges de notification. Le premier jalon tombe quatre heures après la classification."
+      chapeau="Quatre textes disent la même chose de quatre façons : une obligation que personne ne porte nommément n'est portée par personne. Cette page tient le registre qui met un nom en face de chaque obligation transverse, le calculateur qui superpose les quatre horloges de notification pour le jour où cela tourne mal, et le registre d'information que DORA fait remettre chaque année à l'autorité."
     >
-      <div className="sans-impression mb-8 max-w-lg">
-        <Segments
-          valeur={onglet}
-          onChange={setOnglet}
-          options={[
-            { id: 'registre', label: 'Registre de responsabilité' },
-            { id: 'incident', label: 'Délais de notification' },
-          ]}
-        />
-      </div>
+      <Onglets<Onglet>
+        valeur={onglet}
+        onChange={setOnglet}
+        options={[
+          { id: 'registre', label: 'Registre de responsabilité', compte: OBLIGATIONS.length },
+          { id: 'incident', label: 'Délais de notification' },
+          { id: 'dora', label: 'Prestataires — DORA art. 28 §3', compte: accords.items.length },
+        ]}
+      />
 
-      {onglet === 'registre' ? <BlocRegistre /> : <BlocIncident />}
+      {onglet === 'registre' && <BlocRegistre />}
+      {onglet === 'incident' && <BlocIncident />}
+      {onglet === 'dora' && <BlocDora c={accords} />}
     </Page>
   )
 }
@@ -406,6 +428,249 @@ function BlocIncident() {
           </div>
         </section>
       </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Registre d'information DORA — article 28 §3
+// ---------------------------------------------------------------------------
+
+function BlocDora({ c }: { c: Collection<Accord> }) {
+  const etatReg = etatRegistre(c.items)
+
+  return (
+    <div>
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Stat valeur={String(etatReg.total)} libelle="accords inscrits" teinte="brand" />
+        <Stat
+          valeur={String(etatReg.critiques)}
+          libelle="soutenant une fonction critique"
+          teinte="gold"
+        />
+        <Stat
+          valeur={String(etatReg.sansStrategieSortie)}
+          libelle="sans stratégie de sortie"
+          teinte={etatReg.sansStrategieSortie > 0 ? 'ember' : 'jade'}
+        />
+        <Stat
+          valeur={String(etatReg.nonSubstituables)}
+          libelle="prestataires non substituables"
+          teinte={etatReg.nonSubstituables > 0 ? 'ember' : 'jade'}
+        />
+      </div>
+
+      <div className="mb-6 max-w-3xl space-y-4">
+        <Encadre teinte="brand" titre="Remis chaque année à l'autorité">
+          L'article 28 §3 fait du registre d'information une obligation autonome : il est
+          tenu à jour et remis annuellement, indépendamment de la qualité des prestations
+          qu'il décrit. Un registre incomplet est un manquement en soi.
+        </Encadre>
+        {etatReg.nonSubstituables > 0 && (
+          <Encadre teinte="ember" titre="Risque de concentration">
+            {etatReg.nonSubstituables} prestataire(s) jugés non substituables sur une
+            fonction critique. C'est exactement ce que l'autorité cherche dans le
+            registre, au titre de l'article 29 : la situation doit remonter à l'organe de
+            direction, pas rester dans un tableur.
+          </Encadre>
+        )}
+      </div>
+
+      <BarreOutils
+        onAjouter={c.ajouter}
+        libelleAjout="Inscrire un accord"
+        donnees={c.items}
+        onImporter={c.remplacer}
+        nomFichier="registre-information-dora"
+        vide={c.items.length === 0}
+      />
+
+      {c.items.length === 0 ? (
+        <Amorce titre="Ce que ce registre porte, et ce qu'il ne porte pas">
+          <p>
+            Les champs retenus ici sont ceux qui portent une décision — la criticité, la
+            substituabilité, la stratégie de sortie. Les modèles B_01 à B_07 des normes
+            techniques comptent plus de cent colonnes et se remplissent depuis un système
+            d'information, pas depuis un navigateur : le but est de faire apparaître les
+            trous avant l'échéance de remise, pas de produire le fichier de dépôt.
+          </p>
+          <p>
+            Commencez par vos hébergeurs et vos progiciels métier. La question qui trie :
+            <em> si ce prestataire s'arrêtait demain, quelle activité s'arrêterait avec
+            lui ?</em>
+          </p>
+        </Amorce>
+      ) : (
+        <div className="space-y-6">
+          {c.items.map((a, i) => (
+            <article key={a.id} className="card p-6">
+              <EnteteFiche
+                index={i + 1}
+                titre={a.prestataire ? `${a.prestataire} — ${a.service}` : ''}
+                vide="Accord sans prestataire"
+                suivi={a.suivi}
+                completude={completudeAccord(a)}
+                onDupliquer={() => c.dupliquer(a.id)}
+                onSupprimer={() => c.supprimer(a.id)}
+              >
+                {a.fonctionCritique && <Pastille teinte="gold">fonction critique</Pastille>}
+                {a.substituabilite === 'impossible' && (
+                  <Pastille teinte="ember">non substituable</Pastille>
+                )}
+                {a.fonctionCritique && !a.strategieSortie.trim() && (
+                  <Pastille teinte="ember">sans stratégie de sortie</Pastille>
+                )}
+              </EnteteFiche>
+
+              <div className="grid gap-5 md:grid-cols-3">
+                <Texte
+                  label="Prestataire"
+                  article="art. 28 §3"
+                  valeur={a.prestataire}
+                  onChange={(v) => c.modifier(a.id, { prestataire: v })}
+                  placeholder="Raison sociale"
+                />
+                <Texte
+                  label="Identifiant d'entité juridique"
+                  valeur={a.lei}
+                  onChange={(v) => c.modifier(a.id, { lei: v })}
+                  placeholder="LEI à 20 caractères"
+                  aide="Exigé par les normes techniques d'exécution ; à défaut, l'identifiant national."
+                />
+                <Texte
+                  label="Service fourni"
+                  valeur={a.service}
+                  onChange={(v) => c.modifier(a.id, { service: v })}
+                  placeholder="Hébergement, progiciel de gestion, traitement de paiements"
+                />
+                <Texte
+                  label="Pays d'établissement"
+                  valeur={a.paysEtablissement}
+                  onChange={(v) => c.modifier(a.id, { paysEtablissement: v })}
+                />
+                <Texte
+                  label="Pays de traitement des données"
+                  article="art. 29 §2 d"
+                  valeur={a.paysDonnees}
+                  onChange={(v) => c.modifier(a.id, { paysDonnees: v })}
+                  aide="Peut différer du pays d'établissement, et c'est précisément ce que l'autorité regarde."
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="field-label" htmlFor={`deb-${a.id}`}>
+                      Début
+                    </label>
+                    <input
+                      id={`deb-${a.id}`}
+                      type="date"
+                      className="champ-texte tabular"
+                      value={a.dateDebut}
+                      onChange={(e) => c.modifier(a.id, { dateDebut: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="field-label" htmlFor={`fin-${a.id}`}>
+                      Fin
+                    </label>
+                    <input
+                      id={`fin-${a.id}`}
+                      type="date"
+                      className="champ-texte tabular"
+                      value={a.dateFin}
+                      onChange={(e) => c.modifier(a.id, { dateFin: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-5 space-y-4 rounded-xl bg-ink-50 p-4">
+                <Case
+                  coche={a.fonctionCritique}
+                  onChange={(v) => c.modifier(a.id, { fonctionCritique: v })}
+                  label="Le service soutient une fonction critique ou importante"
+                  aide="Une fonction dont l'interruption altérerait sensiblement la performance financière, la solidité ou la continuité des services. C'est cette case qui déclenche les clauses renforcées de l'article 30 §3."
+                />
+
+                {a.fonctionCritique && (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Texte
+                      label="Fonction soutenue"
+                      article="art. 28 §3"
+                      valeur={a.fonction}
+                      onChange={(v) => c.modifier(a.id, { fonction: v })}
+                      placeholder="Tenue de compte, exécution des ordres"
+                    />
+                    <div>
+                      <span className="field-label">Substituabilité</span>
+                      <select
+                        className="champ-texte"
+                        value={a.substituabilite}
+                        onChange={(e) =>
+                          c.modifier(a.id, {
+                            substituabilite: e.target.value as Accord['substituabilite'],
+                          })
+                        }
+                      >
+                        {SUBSTITUABILITES.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.label}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="field-hint">
+                        {SUBSTITUABILITES.find((s) => s.id === a.substituabilite)?.note}
+                      </p>
+                    </div>
+                    <Texte
+                      label="Sous-traitance en chaîne"
+                      article="art. 29 §2 a"
+                      valeur={a.sousTraitance}
+                      onChange={(v) => c.modifier(a.id, { sousTraitance: v })}
+                      lignes={2}
+                      aide="Les prestataires de votre prestataire. C'est le risque que ce registre existe pour révéler : trois banques différentes reposent souvent sur le même quatrième acteur."
+                    />
+                    <Texte
+                      label="Stratégie de sortie"
+                      article="art. 28 §8"
+                      valeur={a.strategieSortie}
+                      onChange={(v) => c.modifier(a.id, { strategieSortie: v })}
+                      lignes={2}
+                      aide="Documentée et testée. Une stratégie de sortie jamais éprouvée est une intention."
+                    />
+                    <Texte
+                      label="Droit d'audit et d'accès"
+                      article="art. 30 §3 e"
+                      valeur={a.droitAudit}
+                      onChange={(v) => c.modifier(a.id, { droitAudit: v })}
+                      placeholder="Art. 12 du contrat ; audit sur site annuel, rapport SOC 2 accepté en complément"
+                    />
+                    <div>
+                      <label className="field-label" htmlFor={`ev-${a.id}`}>
+                        Dernier réexamen
+                      </label>
+                      <input
+                        id={`ev-${a.id}`}
+                        type="date"
+                        className="champ-texte tabular"
+                        value={a.derniereEvaluation}
+                        onChange={(e) =>
+                          c.modifier(a.id, { derniereEvaluation: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-5">
+                <ChampsSuivi suivi={a.suivi} onChange={(v) => c.modifier(a.id, { suivi: v })} />
+              </div>
+
+              <Manquants items={champsManquantsAccord(a)} />
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

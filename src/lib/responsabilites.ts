@@ -13,6 +13,8 @@
  * qu'il rend visibles.
  */
 
+import { perimee } from './suivi'
+
 export type Domaine = 'rgpd' | 'ia' | 'cyber' | 'produit'
 
 export type Obligation = {
@@ -265,10 +267,7 @@ export function couverture(
   return { applicables, faites, orphelines, perimees }
 }
 
-/** Vrai si la dernière revue remonte à plus que la périodicité attendue. */
-export function perimee(derniereRevue: string, mois: number, aujourdhui: string): boolean {
-  const [a, m, j] = derniereRevue.split('-').map(Number)
-  const limite = new Date(Date.UTC(a, m - 1 + mois, j))
-  const [a2, m2, j2] = aujourdhui.split('-').map(Number)
-  return Date.UTC(a2, m2 - 1, j2) > limite.getTime()
-}
+// `perimee` vit désormais dans lib/suivi.ts : la péremption d'une revue est la
+// même notion pour une obligation transverse et pour une ligne de registre, et
+// deux implémentations de la même règle finissent toujours par diverger.
+export { perimee } from './suivi'
