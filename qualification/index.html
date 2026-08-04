@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Filet de sécurité pour l'hébergement statique : après un redéploiement,
+      // une page encore en cache peut référencer un asset dont le nom a changé,
+      // d'où une page blanche. On détecte l'échec de chargement et on recharge
+      // une fois — un rechargement revalide le HTML et récupère les bons noms.
+      (function () {
+        try {
+          addEventListener(
+            'error',
+            function (e) {
+              var el = e.target;
+              var url = el && (el.src || el.href);
+              if (url && /\/assets\//.test(url) && !sessionStorage.getItem('rechargeAsset')) {
+                sessionStorage.setItem('rechargeAsset', '1');
+                location.reload();
+              }
+            },
+            true,
+          );
+          addEventListener('load', function () {
+            sessionStorage.removeItem('rechargeAsset');
+          });
+        } catch (_) {}
+      })();
+    </script>
+    <meta name="description" content="Deux arbres de décision : le niveau de risque d'un système d'IA au sens du règlement (UE) 2024/1689, et la catégorie d'un produit numérique sous le règlement cyberrésilience. Raisonnement rendu article par article." />
+    <meta property="og:title" content="Qualification — niveau de risque IA et catégorie CRA d'un produit" />
+    <meta property="og:description" content="Deux arbres de décision : le niveau de risque d'un système d'IA au sens du règlement (UE) 2024/1689, et la catégorie d'un produit numérique sous le règlement cyberrésilience. Raisonnement rendu article par article." />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href="https://legal.commutator.io/qualification/" />
+    <title>Qualification — niveau de risque IA et catégorie CRA d'un produit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/mainQualification.tsx"></script>
+  </body>
+</html>

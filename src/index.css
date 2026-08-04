@@ -1,0 +1,165 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Bleu institutionnel : le sujet est réglementaire, pas commercial. Rampe
+     complète — une nuance utilisée mais non définie ne génère aucune classe et
+     l'élément hérite silencieusement d'une autre couleur. */
+  --color-brand-50: #eef2fb;
+  --color-brand-100: #dbe3f7;
+  --color-brand-200: #bccdf0;
+  --color-brand-300: #93aee6;
+  --color-brand-400: #648ad8;
+  --color-brand-500: #3f6ac6;
+  --color-brand-600: #2c50a6;
+  --color-brand-700: #23407f;
+  --color-brand-800: #1e3465;
+  --color-brand-900: #1a2b52;
+
+  --color-ink-50: #f7f8fa;
+  --color-ink-100: #eff1f5;
+  --color-ink-200: #e0e4ea;
+  --color-ink-300: #c3cad5;
+  --color-ink-400: #8e98a8;
+  --color-ink-500: #667286;
+  --color-ink-600: #4d5869;
+  --color-ink-700: #3b4453;
+  --color-ink-800: #262d38;
+  --color-ink-900: #161b23;
+
+  /* Trois accents nommés par leur rôle, jamais par leur teinte :
+     — ember : l'échéance passée, l'interdit, ce qui expose à une sanction ;
+     — gold  : l'échéance qui approche, ce qu'il faut préparer maintenant ;
+     — jade  : ce qui est documenté, donc défendable.
+     Les nuances 600/700 sont calibrées pour passer 4,5:1 sur blanc *et* sur le
+     fond 50 de la même famille, puisque c'est là qu'elles sont lues. */
+  --color-ember-50: #fef3f2;
+  --color-ember-100: #fde5e2;
+  --color-ember-200: #fbcdc7;
+  --color-ember-300: #f6a79d;
+  --color-ember-400: #ef7263;
+  --color-ember-500: #e34a38;
+  --color-ember-600: #c9301e;
+  --color-ember-700: #a52717;
+  --color-ember-800: #86241a;
+  --color-ember-900: #6f231b;
+
+  --color-gold-50: #fdf8ed;
+  --color-gold-100: #fbeed0;
+  --color-gold-200: #f6dda0;
+  --color-gold-300: #eec367;
+  --color-gold-400: #e5a734;
+  --color-gold-500: #d18d1a;
+  --color-gold-600: #ab6c12;
+  --color-gold-700: #875410;
+  --color-gold-800: #6f4514;
+  --color-gold-900: #5d3a15;
+
+  --color-jade-50: #edfaf3;
+  --color-jade-100: #d3f3e2;
+  --color-jade-200: #a9e6c8;
+  --color-jade-300: #71d2a7;
+  --color-jade-400: #3db684;
+  --color-jade-500: #1d9a6a;
+  --color-jade-600: #0f7a54;
+  --color-jade-700: #0d6144;
+  --color-jade-800: #0d4d38;
+  --color-jade-900: #0c402f;
+
+  --font-sans:
+    'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Pile serif *système* pour les titres : elle donne au site l'identité d'un
+     document plutôt que d'une application, sans télécharger une police de
+     plus. */
+  --font-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+
+  --radius-card: 1.25rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ink-50 text-ink-900 font-sans antialiased;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-[var(--radius-card)] border border-ink-200/70 bg-white;
+    box-shadow:
+      0 1px 2px rgb(22 27 35 / 0.04),
+      0 8px 24px -12px rgb(22 27 35 / 0.12);
+  }
+
+  .titre {
+    @apply font-serif font-semibold tracking-tight;
+  }
+
+  .field-label {
+    @apply mb-1.5 block text-sm font-medium text-ink-700;
+  }
+
+  .field-hint {
+    @apply mt-1.5 text-xs leading-relaxed text-ink-400;
+  }
+
+  /* Champs de saisie : une seule définition, sinon chaque formulaire dérive. */
+  .zone-texte,
+  .champ-texte {
+    @apply w-full rounded-xl border border-ink-200 bg-white px-3.5 py-2.5 text-sm
+      text-ink-900 outline-none transition
+      focus:border-brand-500 focus:ring-4 focus:ring-brand-100;
+  }
+
+  .zone-texte {
+    @apply leading-relaxed;
+  }
+
+  /* Référence d'article de loi, dans le fil du texte. */
+  .ref {
+    @apply rounded bg-ink-100 px-1.5 py-0.5 font-mono text-[0.8em] text-ink-600;
+  }
+}
+
+/* --- Impression ---------------------------------------------------------
+   Les registres tenus ici sont des pièces de dossier : ils doivent sortir en
+   PDF lisible. On masque la navigation et les commandes, et on déplie tout ce
+   qui est replié à l'écran. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  body {
+    @apply bg-white;
+  }
+
+  .sans-impression {
+    display: none !important;
+  }
+
+  .card {
+    box-shadow: none;
+    break-inside: avoid;
+    @apply border-ink-300;
+  }
+
+  /* Un repli fermé à l'écran ne doit pas emporter son contenu hors du PDF :
+     on force l'affichage des enfants plutôt que de compter sur l'attribut
+     `open`, que l'impression ne modifie pas. */
+  details:not([open]) > *:not(summary) {
+    display: block;
+  }
+
+  details > summary {
+    @apply list-none font-semibold;
+  }
+}
