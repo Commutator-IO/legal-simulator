@@ -3,19 +3,18 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-  # Les contrôles tournent aussi sur les pull requests ; seul le déploiement
-  # est réservé à la branche main.
+  # Checks run on pull requests too; only the deployment is reserved for main.
   pull_request:
     branches: [main]
   workflow_dispatch:
 
-# Jeton nécessaire au déploiement Pages.
+# Token required to deploy to Pages.
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Un déploiement à la fois, sans annuler celui en cours.
+# One deployment at a time, without cancelling the one in flight.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -34,34 +33,32 @@ jobs:
 
       - run: npm ci
 
-      # `--deny-warnings` est indispensable : sans le drapeau, oxlint signale
-      # les avertissements et sort avec le code 0 — cette étape ne pourrait
-      # alors jamais échouer.
+      # `--deny-warnings` is essential: without the flag, oxlint reports
+      # warnings and exits 0 — this step could then never fail.
       - name: Lint
         run: npm run lint
 
-      # Les dates d'application et les arbres de qualification ne partent pas
-      # sans leurs tests : ce sont eux qui gardent l'exactitude juridique du
-      # site. Vitest sort en erreur aussi bien sur un test rouge que lorsqu'il
-      # ne trouve aucun fichier de test, donc la suite ne peut pas disparaître
-      # en silence.
+      # Application dates and qualification trees do not ship without their
+      # tests: they are what guards the site's legal accuracy. Vitest exits
+      # non-zero both on a failing test and when it finds no test file at all,
+      # so the suite cannot silently disappear.
       - name: Unit tests
         run: npm test
 
-      # `npm run build` enchaîne `tsc -b` puis `vite build` : une erreur de
-      # typage fait échouer cette étape.
+      # `npm run build` chains `tsc -b` then `vite build`, so a type error
+      # fails this step.
       #
-      # Le site est servi depuis le domaine dédié legal.commutator.io, donc
-      # depuis la racine : les assets ne doivent pas être préfixés et
-      # BASE_PATH reste vide (vite.config.ts retombe alors sur "/").
-      # Sans domaine personnalisé, un site de projet vit sous /<dépôt>/ et il
-      # faudrait BASE_PATH: /${{ github.event.repository.name }}/
+      # The site is served from the dedicated domain legal.commutator.io, i.e.
+      # from the root: assets must not be prefixed and BASE_PATH stays unset
+      # (vite.config.ts then falls back to "/").
+      # Without a custom domain a project site lives under /<repo>/ instead,
+      # and this would need BASE_PATH: /${{ github.event.repository.name }}/
       - name: Build
         run: npm run build
 
-      # `enablement: true` provisionne Pages sur le dépôt s'il ne l'est pas
-      # encore. Si la politique de l'organisation refuse au GITHUB_TOKEN le
-      # droit de créer le site, le créer une fois à la main :
+      # `enablement: true` provisions Pages on the repository if it is not set
+      # up yet. If the organisation policy denies the GITHUB_TOKEN the right to
+      # create the site, create it once by hand:
       #   gh api -X POST repos/Commutator-IO/legal-simulator/pages \
       #     -f "build_type=workflow"
       - uses: actions/configure-pages@v6
@@ -77,7 +74,7 @@ jobs:
   deploy:
     name: Deploy
     needs: build
-    # Une pull request ne déploie pas ; elle ne fait que passer les contrôles.
+    # A pull request does not deploy; it only runs the checks.
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
