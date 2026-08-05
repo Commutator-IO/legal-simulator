@@ -61,7 +61,7 @@ Trois règles tenues partout :
 | `/analyses/` | Impact (art. 35), intérêt légitime (art. 6 §1 f), transfert (Schrems II), droits fondamentaux (AI Act art. 27) |
 | `/ia/` | Inventaire des systèmes avec qualification, documentation de l'annexe IV, journal de maîtrise de l'article 4 |
 | `/produit/` | Catalogue et catégorie CRA, évaluation des risques (art. 13 §2), déclaration UE de conformité (annexe V), audit d'accessibilité EN 301 549 |
-| `/sbom/` | La nomenclature logicielle de bout en bout : ce que le texte exige, CycloneDX contre SPDX, les outils par écosystème, deux chaînes CI/CD complètes, et ce qu'on en fait ensuite |
+| `/sbom/` | Le SBOM de bout en bout : ce que le texte exige, CycloneDX contre SPDX, les générateurs par écosystème, deux pipelines CI/CD complets, et ce qu'on en fait ensuite. Seule page du site à employer les termes anglais du métier — lockfile, digest, tag, plugin — parce que c'est ce qu'on tape dans un fichier de CI |
 | `/responsabilites/` | Registre de responsabilité, calculateur de délais de notification, registre d'information DORA (art. 28 §3) |
 
 Trois principes de structure :
