@@ -25,4 +25,7 @@ export const PAGES: { chemin: string; libelle: string }[] = [
   { chemin: '/produit/', libelle: 'Produit' },
   { chemin: '/sbom/', libelle: 'SBOM' },
   { chemin: '/responsabilites/', libelle: 'Responsabilités' },
+  // La liste de lecture ferme la navigation : elle ne produit aucune pièce,
+  // elle dit ce qu'il faut savoir pour produire les autres.
+  { chemin: '/lectures/', libelle: 'Lectures' },
 ]

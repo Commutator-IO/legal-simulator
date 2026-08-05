@@ -63,6 +63,7 @@ Trois règles tenues partout :
 | `/produit/` | Catalogue et catégorie CRA, évaluation des risques (art. 13 §2), déclaration UE de conformité (annexe V), audit d'accessibilité EN 301 549 |
 | `/sbom/` | Le SBOM de bout en bout : ce que le texte exige, CycloneDX contre SPDX, les générateurs par écosystème, deux pipelines CI/CD complets, et ce qu'on en fait ensuite. Seule page du site à employer les termes anglais du métier — lockfile, digest, tag, plugin — parce que c'est ce qu'on tape dans un fichier de CI |
 | `/responsabilites/` | Registre de responsabilité, calculateur de délais de notification, registre d'information DORA (art. 28 §3) |
+| `/lectures/` | Trois parcours de montée en compétence classés par retour et rattachés à une échéance — SBOM, data lineage, cadrage NIS 2 — avec ce qu'on lit, ce qu'on fait, et ce qu'on écarte |
 
 Trois principes de structure :
 
