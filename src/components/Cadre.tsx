@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { DEPOT, PAGES } from '../lib/site'
+import { COMMUTATOR, DEPOT, PAGES } from '../lib/site'
 
 /**
  * En-tête et pied partagés par toutes les pages.
@@ -182,7 +182,19 @@ export function Pied() {
             </p>
           </div>
         </div>
-        <p className="mt-8 flex flex-wrap gap-x-5 gap-y-1 border-t border-ink-100 pt-5 text-ink-400">
+        <div className="mt-8 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3 border-t border-ink-100 pt-5">
+          {/* Le lien retour vient en premier et se distingue des liens
+              utilitaires : un sous-domaine isolé n'a autrement aucun chemin
+              vers ce dont il fait partie. */}
+          <a
+            href={COMMUTATOR}
+            className="font-medium text-ink-600 transition hover:text-brand-700"
+          >
+            Un site <span className="text-brand-700">Commutator</span> —
+            www.commutator.io
+          </a>
+
+          <p className="flex flex-wrap gap-x-5 gap-y-1 text-ink-400">
           <a
             href={DEPOT}
             target="_blank"
@@ -207,7 +219,8 @@ export function Pied() {
           >
             EUR-Lex
           </a>
-        </p>
+          </p>
+        </div>
       </div>
     </footer>
   )

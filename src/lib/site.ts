@@ -8,6 +8,10 @@
 
 export const DEPOT = 'https://github.com/Commutator-IO/legal-simulator'
 
+/** Le site parent. Le pied de page y renvoie — un sous-domaine isolé n'a
+ *  autrement aucun chemin de retour vers ce dont il fait partie. */
+export const COMMUTATOR = 'https://www.commutator.io'
+
 /**
  * L'ordre des pages est celui du raisonnement, pas celui de l'importance :
  * d'abord ce qui vous concerne, puis quand cela tombe, puis ce que disent les
