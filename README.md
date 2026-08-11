@@ -105,6 +105,8 @@ avertissements et sort avec 0.
 ### Où vit quoi
 
 ```
+vite.config.ts  greffon `plan-du-site` : émet sitemap.xml et robots.txt
+src/lib/site.ts la liste des pages — source unique de la nav et du sitemap
 src/lib/        le droit — corpus, dates, arbres de décision, et leurs tests
 src/lib/notions.ts  les huit notions pédagogiques, et l'erreur que chacune évite
 src/components/ Cadre, Champs, Blocs, Frise, Pieces (dont ModeEmploi)
